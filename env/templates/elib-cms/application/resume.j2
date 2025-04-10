@@ -14,6 +14,7 @@ class resume extends BaseTemplate
 {
     const YEARS = 20;
     const SHOW_DETAIL = true;
+    const DEFAULT_SECTION_ID = 1;
 
     private $cache;
     private $cutOffDate;
@@ -21,7 +22,7 @@ class resume extends BaseTemplate
 
     public function __construct($boot)
     {
-        $_GET['section'] = 1;
+        $_GET['section'] = self::DEFAULT_SECTION_ID;
         parent::__construct($boot);
         $this->cache = $this->stash->get('cache');
     }
