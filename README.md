@@ -113,7 +113,9 @@ ansible-playbook ../main.yml -e "op=boot"
 Boostrap Empathy projects giving target extension template name. Template default is "vanilla" for
 base empathy app with no extensions, (when no argument is provided).  
 
-Others available are "elib-base", "elib-acl" and "elib-blog".
+Others available are "elib-base", "elib-acl", "elib-blog" and "elib-cms".
+
+NB: elib-cms dummy content (database dump) generated with ChatGPT!
 
 The playbook will fail if codebase path already exists.
 
