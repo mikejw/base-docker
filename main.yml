@@ -298,6 +298,10 @@
       when: operation == "qs" and template == "elib-acl"
     - name: qs elib-cms template
       block:
+        - name: copy reset css
+          copy:
+            src: "{{ playbook_dir }}/env/templates/elib-cms/reset.j2"
+            dest: "{{ code_dir }}/{{ use_project }}/public_html/css/reset.css"
         - name: copy tpl files
           copy:
             src: "{{ playbook_dir }}/env/templates/elib-cms/tpl/"
