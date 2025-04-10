@@ -1,6 +1,12 @@
 {
     "require": {
+    {% if template == 'elib-cms' %}
+        "mikejw/elib-cms": "dev-feature/import-export-data-containers",
+        "mikejw/elib-siteinfo": "dev-bootstrap4",
+        "nesbot/carbon": "^3.0@dev"
+    {% else %}
         "mikejw/{% if template == 'vanilla' %}empathy{% else %}{{ template}}{% endif %}": "dev-{{ qs_branch }}"
+    {% endif %}    
     },
     "minimum-stability": "dev"
 }

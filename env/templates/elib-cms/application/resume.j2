@@ -1,0 +1,149 @@
+<?php
+
+namespace Empathy\MVC\Controller;
+
+use Empathy\ELib\DSection\BaseTemplate;
+use Empathy\ELib\Model;
+use Empathy\ELib\Storage\DataItem;
+use Empathy\ELib\DSection\SectionsTree;
+use Empathy\MVC\DI;
+use Carbon\Carbon;
+
+
+class resume extends BaseTemplate
+{
+    const YEARS = 20;
+    const SHOW_DETAIL = true;
+
+    private $cache;
+    private $cutOffDate;
+    private $showDetail;
+
+    public function __construct($boot)
+    {
+        $_GET['section'] = 1;
+        parent::__construct($boot);
+        $this->cache = $this->stash->get('cache');
+    }
+
+    private function calculateCutOff($years = self::YEARS) {
+        $this->cutOffDate = Carbon::now()->sub($years, 'year')->startOfDay();
+    }
+
+    private function setDetail($detail = self::SHOW_DETAIL)
+    {
+        $this->showDetail = $detail;
+    }
+
+    private function isWithinYears($dateRange)
+    {
+        $endDateArr = explode('-', $dateRange);
+        if (count($endDateArr) > 1) {
+            $date = $endDateArr[count($endDateArr) - 1];
+        } else {
+            $date = $endDateArr[0];
+        }
+        $date = trim($date);
+        $dateArr = explode('/', $date);
+        $dateObj = Carbon::create($dateArr[1], $dateArr[0])->endOfMonth();
+        return $dateObj->greaterThanOrEqualTo($this->cutOffDate);
+    }
+
+
+    public function getData()
+    {
+        $s = $this->section;
+        $d = $this->data_item;
+        $d->getSectionDataRecursive($s->id);
+
+
+        $contact = $d->find(DataItem::FIND_LABEL, '/Contact/');
+        foreach ($contact as $item) {
+            $item->value = $item->find(DataItem::FIND_LABEL, '/Heading/')->heading;
+        }
+
+        $certifications = array();
+        foreach ($d->find(DataItem::FIND_LABEL, '/Certifications/') as $item) {
+            $cert = new \stdClass();
+            $cert->title = $item->find(DataItem::FIND_LABEL, '/Title/')->heading;
+            $cert->value = $item->find(DataItem::FIND_LABEL, '/Date/')->heading;
+            $cert->body = $item->find(DataItem::FIND_LABEL, '/Body/')->heading;
+            $cert->stamp = Carbon::createFromFormat('d/m/Y', '01/' . $cert->value);
+            array_push($certifications, $cert);
+        }
+
+        usort($certifications, function($first, $second){
+            return $second->stamp <=> $first->stamp; 
+        });
+    
+        $exp = $d->find(DataItem::FIND_LABEL, '/Professional Experience/');
+        $expArr = [];
+
+        foreach ($exp as $item) {
+            $date = $item->find(DataItem::FIND_LABEL, '/Date/')->heading;
+
+            if ($this->isWithinYears($date)) {
+                $expItem = new \stdClass();
+                $expItem->company = $item->label;
+                $expItem->type = $item->find(DataItem::FIND_LABEL, '/Type/')->heading;
+                $expItem->date = $item->find(DataItem::FIND_LABEL, '/Date/')->heading;
+                $expItem->title = $item->find(DataItem::FIND_LABEL, '/Title/')->heading;
+                $expItem->blurb = $item->find(DataItem::FIND_LABEL, '/Blurb/',  [DataItem::FIND_OPT_CONVERT_MD])->body;
+                $expItem->points = $this->showDetail ? $item->find(DataItem::FIND_LABEL, '/Points/', [DataItem::FIND_OPT_CONVERT_MD])->body : '';
+                $expArr[] = $expItem;
+            }
+        }
+
+
+        $education = $d->find(DataItem::FIND_LABEL, '/Education/');
+        $eduArr = [];
+
+
+        foreach ($education as $item) {                    
+            $eduItem = new \stdClass();
+            $eduItem->label = $item->label;
+            $eduItem->title = $item->find(DataItem::FIND_LABEL, '/Title/')->heading;
+            $eduItem->date = $item->find(DataItem::FIND_LABEL, '/Date/')->heading;
+            $eduArr[] = $eduItem;
+        }
+
+        $siteInfo = DI::getContainer()->get('SiteInfo');
+        $settings = $siteInfo->loadSettings();
+
+        return [
+            'heading' => $d->find(DataItem::FIND_LABEL, '/Heading/'),
+            'keywords' => $settings->keywords,
+            'description' => $settings->description,
+            'contact' => $contact,
+            'statement' => $d->find(DataItem::FIND_LABEL, '/Personal Statement/'),
+            'skills' => $d->find(DataItem::FIND_LABEL, '/Technical Skills/'),
+            'certs' => $certifications,
+            'experience' => $expArr,
+            'education' => $eduArr,
+            'interests' => $d->find(DataItem::FIND_LABEL, '/Interests/'),
+        ];
+    }
+
+
+    public function default_event()
+    {
+        $years = self::YEARS;
+        if (isset($_GET['years']) && is_numeric($_GET['years'])) {
+            $years = $_GET['years'];
+        }
+
+        $detail = self::SHOW_DETAIL;
+
+        if (isset($_GET['hide_detail']) && $_GET['hide_detail'] != 'false') {
+            $detail = false;
+        }
+
+        $this->setDetail($detail);
+        $this->calculateCutOff($years);
+
+        $s = $this->section;
+        $cacheKey = 'section_' . $s->id . '_' . $years . '_' . $detail;
+        $content = $this->cache->cachedCallback($cacheKey, array($this, 'getData'));        
+        $this->assign('content', $content);
+    }
+}

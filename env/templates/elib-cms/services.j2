@@ -1,0 +1,26 @@
+<?php
+
+use Empathy\ELib\VCache;
+use Empathy\MVC\Config;
+use Empathy\ELib\Settings\SiteInfo;
+
+return [
+    'ApcuDebug' => false,
+    'LoggingOn' => false,
+    'CacheEnabled' => false,
+    'Cache' => function (\DI\Container $c) {
+        $cacheHost = str_replace('db-', 'cache-', Config::get('DB_SERVER'));
+        if ($cacheHost === 'db') {
+          $cacheHost = 'cache';
+        }
+        return new VCache($cacheHost, 11211, null, $c->get('CacheEnabled'));
+    },
+    'SiteInfoSettings' =>  array(
+        'title',
+        'keywords',
+        'description'
+    ),
+     'SiteInfo' => function (\DI\Container $c) {
+        return new SiteInfo();
+    }
+];
