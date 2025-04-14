@@ -4,7 +4,7 @@
 
 ## [1.1.1] - 2025-04-14
 
-_See [`README.md#initialise-global-developer-flag](README.md) for `developer` flag implications._ 
+_See [`README.md#initialise-global-developer-flag`](README.md) for `developer` flag implications._ 
 
 ### Changed
 
