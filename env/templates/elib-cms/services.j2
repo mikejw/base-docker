@@ -5,7 +5,7 @@ use Empathy\MVC\Config;
 use Empathy\ELib\Settings\SiteInfo;
 
 return [
-    'ApcuDebug' => false,
+    'ApcuDebug' => true,                                    // disable in prod!
     'LoggingOn' => false,
     'CacheEnabled' => false,
     'Cache' => function (\DI\Container $c) {

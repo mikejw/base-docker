@@ -6,7 +6,7 @@ use Laminas\Permissions\Acl\Resource\GenericResource as Resource;
 use Empathy\ELib\User\AclUser;
 
 return [
-    'ApcuDebug' => false,
+    'ApcuDebug' => true,                                    // disable in prod!
     'LoggingOn' => false,
     'Acl' => function(\DI\Container $c) {
         $acl = new Acl();
