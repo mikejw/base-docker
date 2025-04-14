@@ -6,7 +6,7 @@
 
 _See [`README.md#initialise-global-developer-flag`](README.md) for `developer` flag implications._ 
 
-### Changed
+### Added
 
 - Introduce new `base-docker.ini` flag: `developer`
 
