@@ -12,7 +12,7 @@
 - name:  git safe directories
   shell: docker exec -i -u www-data app  git config --global --add safe.directory '*'
 - name: composer install
-  shell: docker exec -i -u www-data app php ./composer.phar install -q --prefer-source
+  shell: "docker exec -i -u www-data app php ./composer.phar install -q {{ composer_install_source }}"
 - name: set up app
   expect:
     command: docker exec -i -u www-data app php ./vendor/bin/empathy --new_app

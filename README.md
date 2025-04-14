@@ -92,6 +92,18 @@ ansible-playbook ../init.yml -e "h=10.0.0.22"
 </code></pre>
 
 
+##### Initialise global `developer` flag:
+
+Running the `init.yml` playbook, by default will disable this global flag. It can be enabled with:
+
+<pre><code class="language-bash">cd ansible
+ansible-playbook ../init.yml -e "dev=true"
+</code></pre>
+
+When enabled, this currently ensures all composer dependencies are cloned (via git) 
+during quickstart templating installs.
+
+
 ##### Switch project:
 
 <pre><code class="language-bash">cd ansible

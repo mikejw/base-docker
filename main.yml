@@ -33,20 +33,24 @@
 
 - hosts: "{{ variable_host | default('control') }}"
   vars:
+    arch_ini: "arch section=Settings file={{ settings_dir }}/{{ settings_file }}"
+    host_ini: "host section=Settings file={{ settings_dir }}/{{ settings_file }}"
     project_ini: "project section=Settings file={{ settings_dir }}/{{ settings_file }}"
+    developer_ini: "developer section=Settings file={{ settings_dir }}/{{ settings_file }}"
     saved_project: "{{ lookup('ini', project_ini) }}"
-    operation: "{{ (op is defined) | ternary(op, 'none') }}"
+    saved_developer: "{{ lookup('ini', developer_ini) }}"
+    saved_arch: "{{ lookup('ini', arch_ini) }}"
+    saved_host: "{{ lookup('ini', host_ini) }}"
     use_project: "{{ (cb is defined) | ternary(cb, saved_project) }}"
+    use_arch: "{{ (saved_arch == 'pi') | ternary('pi', '') }}"
+    use_host: "{{ (saved_host != '') | ternary(saved_host, 'www.dev.org') }}"
+    use_developer: "{{ (saved_developer) | ternary(saved_developer, false) }}"
+    operation: "{{ (op is defined) | ternary(op, 'none') }}"
     template: "{{ (tpl is defined) | ternary(tpl, 'vanilla') }}"
     qs_branch: "{{ (template == 'elib-blog' or template == 'elib-cms') | ternary('bootstrap4', 'master') }}"
-    arch_ini: "arch section=Settings file={{ settings_dir }}/{{ settings_file }}"
-    saved_arch: "{{ lookup('ini', arch_ini) }}"
-    use_arch: "{{ (saved_arch == 'pi') | ternary('pi', '') }}"
-    host_ini: "host section=Settings file={{ settings_dir }}/{{ settings_file }}"
-    saved_host: "{{ lookup('ini', host_ini) }}"
-    use_host: "{{ (saved_host != '') | ternary(saved_host, 'www.dev.org') }}"
     partial_file: "{{ playbook_dir }}/docker-compose.partial.yml"
     partial_text: "{{ lookup('file', partial_file, lstrip=false, rstrip=false, errors='ignore') }}"
+    composer_install_source: "{{ (use_developer) | ternary('--prefer-source', '') }}"
   gather_facts: no
   tasks:
     - name: install pip packages

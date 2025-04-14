@@ -6,6 +6,8 @@
     use_arch: "{{ (arch_string == 'pi') | ternary('pi', '') }}"
     use_host: "{{ (h is defined) | ternary(h, 'www.dev.org') }}"
     use_project: "{{ (cb is defined) | ternary(cb, 'my_project') }}"
+    use_developer: "{{ (dev is defined) | ternary(dev, false) }}"
+
   tasks:        
     - name: create config directory
       file:
