@@ -2,6 +2,14 @@
 # Changelog
 
 
+## [1.1.2] - 2025-04-23
+
+### Fixed
+
+- Demonstrate dynamic sections with `ELib CMS` quickstart template
+- Ensure thats logging container works as expected
+
+
 ## [1.1.1] - 2025-04-14
 
 _See [`README.md#initialise-global-developer-flag`](README.md) for `developer` flag implications._ 

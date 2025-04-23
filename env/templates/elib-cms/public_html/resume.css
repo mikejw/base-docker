@@ -1,0 +1,130 @@
+body {
+    background-color: #fff;
+    font-family: sans-serif;
+}
+
+a {
+    color: #000;
+}
+
+main {
+    max-width: 800px;
+    margin: 0 auto 0 auto;
+    margin-bottom: 18rem;
+    padding: 0 2rem 0 2rem;
+}
+
+#B main {
+  padding: 0 1.5rem 0 1.5rem;
+}
+
+
+h1 {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 1.4rem;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-family: georgia, serif;
+}
+
+.skills, .statement, .contact, .exp, .education, .interests, .certs {
+    margin-top: 2.5rem;
+}
+
+.exp .content, .exp table {
+    margin-top: 2rem;
+}
+
+div p, table, ul {
+    margin-top: 1.5rem;
+}
+p, td, th, ul li {
+    line-height: 1.7rem;
+}
+
+ul {
+    padding-left: 3rem;
+    list-style: square;
+}
+
+table {
+    width: 100%;
+}
+
+table th {
+    text-align: left;
+}
+
+table td {
+    vertical-align: top;
+}
+
+.contact td {
+    text-align: center;
+}
+
+.text-bold, p strong {
+    font-weight: bold;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.skills table td, .education table td {
+    padding: 0.5rem;
+    width: 24%;
+}
+
+.education table td.info {
+    width: 48%;
+}
+
+.contact th {
+    width: 72%;
+}
+
+.exp th, .certs th {
+    width: 70%;
+}
+
+#A {
+    background-image: url('/img/city2.png');
+    background-position: bottom;
+    background-repeat: repeat-x;
+    background-color: #fafafb;
+}
+
+#A .statement {
+    min-height: 20rem;
+}
+
+#A .statement .image {
+      text-align: center;
+  }
+
+
+#A .statement p:nth-of-type(2) {
+    text-indent: 0.5rem;
+    margin-top: 2rem;
+}
+
+#A .statement p:nth-of-type(2):first-letter {
+    font-size: 3rem;
+    font-family: georgia, serif;
+}
+
+@media only screen and (min-width: 550px) {
+
+  #A .statement .image {
+    text-align: left;
+  }
+
+  #A .statement img {
+      margin: 0 0 3rem 3rem;
+      float: right;
+  }
+}

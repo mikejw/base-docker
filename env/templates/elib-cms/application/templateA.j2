@@ -1,0 +1,39 @@
+<?php
+
+namespace Empathy\MVC\Controller;
+
+use Empathy\ELib\DSection\BaseTemplate;
+use Empathy\ELib\Storage\DataItem;
+
+class templateA extends BaseTemplate
+{
+    private $cache;
+
+    public function __construct($boot)
+    {
+        parent::__construct($boot);
+        $this->cache = $this->stash->get('cache');
+        $this->setTemplate('templateA.tpl');
+    }
+
+    public function getData()
+    {
+        $s = $this->section;
+        $d = $this->data_item;
+        $d->getSectionDataRecursive($s->id);
+
+        return [
+            'blurb' => $d->find(DataItem::FIND_LABEL, '/Blurb/'),
+            'image' => $d->find(DataItem::FIND_LABEL, '/Profile/'),
+            'heading' => $d->find(DataItem::FIND_LABEL, '/Heading/')
+        ];
+    }
+
+    public function default_event()
+    {
+        $s = $this->section;
+        $cacheKey = 'section_' . $s->id;
+        $content = $this->cache->cachedCallback($cacheKey, array($this, 'getData'));
+        $this->assign('content', $content);
+    }
+}

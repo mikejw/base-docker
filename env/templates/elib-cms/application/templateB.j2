@@ -3,18 +3,14 @@
 namespace Empathy\MVC\Controller;
 
 use Empathy\ELib\DSection\BaseTemplate;
-use Empathy\ELib\Model;
 use Empathy\ELib\Storage\DataItem;
-use Empathy\ELib\DSection\SectionsTree;
 use Empathy\MVC\DI;
 use Carbon\Carbon;
 
-
-class resume extends BaseTemplate
+class templateB extends BaseTemplate
 {
     const YEARS = 20;
     const SHOW_DETAIL = true;
-    const DEFAULT_SECTION_ID = 1;
 
     private $cache;
     private $cutOffDate;
@@ -22,9 +18,9 @@ class resume extends BaseTemplate
 
     public function __construct($boot)
     {
-        $_GET['section'] = self::DEFAULT_SECTION_ID;
         parent::__construct($boot);
         $this->cache = $this->stash->get('cache');
+        $this->setTemplate('templateB.tpl');
     }
 
     private function calculateCutOff($years = self::YEARS) {
@@ -58,13 +54,13 @@ class resume extends BaseTemplate
         $d->getSectionDataRecursive($s->id);
 
 
-        $contact = $d->find(DataItem::FIND_LABEL, '/Contact/');
+        $contact = $d->find(DataItem::FIND_LABEL, '/Contact/') ?? array();
         foreach ($contact as $item) {
             $item->value = $item->find(DataItem::FIND_LABEL, '/Heading/')->heading;
         }
 
         $certifications = array();
-        foreach ($d->find(DataItem::FIND_LABEL, '/Certifications/') as $item) {
+        foreach ($d->find(DataItem::FIND_LABEL, '/Certifications/') ?? array() as $item) {
             $cert = new \stdClass();
             $cert->title = $item->find(DataItem::FIND_LABEL, '/Title/')->heading;
             $cert->value = $item->find(DataItem::FIND_LABEL, '/Date/')->heading;
@@ -74,10 +70,10 @@ class resume extends BaseTemplate
         }
 
         usort($certifications, function($first, $second){
-            return $second->stamp <=> $first->stamp; 
+            return $second->stamp <=> $first->stamp;
         });
-    
-        $exp = $d->find(DataItem::FIND_LABEL, '/Professional Experience/');
+
+        $exp = $d->find(DataItem::FIND_LABEL, '/Professional Experience/') ?? array();
         $expArr = [];
 
         foreach ($exp as $item) {
@@ -96,11 +92,10 @@ class resume extends BaseTemplate
         }
 
 
-        $education = $d->find(DataItem::FIND_LABEL, '/Education/');
+        $education = $d->find(DataItem::FIND_LABEL, '/Education/') ?? array();
         $eduArr = [];
 
-
-        foreach ($education as $item) {                    
+        foreach ($education as $item) {
             $eduItem = new \stdClass();
             $eduItem->label = $item->label;
             $eduItem->title = $item->find(DataItem::FIND_LABEL, '/Title/')->heading;
@@ -144,7 +139,7 @@ class resume extends BaseTemplate
 
         $s = $this->section;
         $cacheKey = 'section_' . $s->id . '_' . $years . '_' . $detail;
-        $content = $this->cache->cachedCallback($cacheKey, array($this, 'getData'));        
+        $content = $this->cache->cachedCallback($cacheKey, array($this, 'getData'));
         $this->assign('content', $content);
     }
 }

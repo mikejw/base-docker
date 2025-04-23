@@ -71,6 +71,25 @@
           community.docker.docker_compose_v2:
             project_src: "{{ playbook_dir }}"
             state: absent
+        - name: detect log dir subdir
+          stat:
+            path: "{{ code_dir }}/{{ use_project }}/logs/main.log"
+          register: st
+        - name: remove log dir subdir
+          ansible.builtin.file:
+            path: "{{ code_dir }}/{{ use_project }}/logs/main.log"
+            state: absent
+          when: st.stat.isdir is defined and st.stat.isdir
+        - name: create log dir
+          ansible.builtin.file:
+            path: "{{ code_dir }}/{{ use_project }}/logs"
+            state: directory
+            mode: '0755'
+        - name: create empty log file
+          ansible.builtin.file:
+            path: "{{ code_dir }}/{{ use_project }}/logs/main.log"
+            state: touch
+            mode: u=rw,g=r,o=r
         - name: boot containers
           community.docker.docker_compose_v2:
             project_src: "{{ playbook_dir }}"
@@ -304,7 +323,7 @@
       block:
         - name: copy reset css
           copy:
-            src: "{{ playbook_dir }}/env/templates/elib-cms/reset.j2"
+            src: "{{ playbook_dir }}/env/templates/elib-cms/public_html/reset.j2"
             dest: "{{ code_dir }}/{{ use_project }}/public_html/css/reset.css"
         - name: copy tpl files
           copy:
@@ -328,10 +347,29 @@
           file:
             path: "{{ code_dir }}/{{ use_project }}/application/resume"
             state: directory
-        - name: populate front.php
+        - name: populate templateA.php
           template:
-            src: "{{ playbook_dir }}/env/templates/elib-cms/application/resume.j2"
-            dest: "{{ code_dir }}/{{ use_project }}/application/resume/resume.php"
+            src: "{{ playbook_dir }}/env/templates/elib-cms/application/templateA.j2"
+            dest: "{{ code_dir }}/{{ use_project }}/application/resume/templateA.php"
+        - name: populate templateB.php
+          template:
+            src: "{{ playbook_dir }}/env/templates/elib-cms/application/templateB.j2"
+            dest: "{{ code_dir }}/{{ use_project }}/application/resume/templateB.php"
+        - name: populate city2.png
+          copy:
+            src: "{{ playbook_dir }}/env/templates/elib-cms/public_html/city2.png"
+            dest: "{{ code_dir }}/{{ use_project }}/public_html/img/"
+        - name: populate resume.css
+          copy:
+            src: "{{ playbook_dir }}/env/templates/elib-cms/public_html/resume.css"
+            dest: "{{ code_dir }}/{{ use_project }}/public_html/css/"          
+        - name: copy upload profile image
+          ansible.builtin.copy:
+            src: "{{ item }}"
+            dest: "{{ code_dir }}/{{ use_project }}/public_html/uploads/"
+            mode: 0600
+          with_fileglob:
+            - "{{ playbook_dir }}/env/templates/elib-cms/public_html/uploads/*"
         - name: site info module
           command: "docker exec -i -u www-data app php ./vendor/bin/empathy --inst_mod admin"
         - name: populate services.php
@@ -341,8 +379,18 @@
         - name: set default module
           ansible.builtin.lineinfile:
             path: "{{ code_dir }}/{{ use_project }}/config.yml"
-            regexp: 'default_module'
-            line: "  default_module: resume"    
+            regexp: 'default_module:'
+            line: "  default_module: resume"
+        - name: set dynamic module
+          ansible.builtin.lineinfile:
+            path: "{{ code_dir }}/{{ use_project }}/config.yml"
+            regexp: 'dynamic_module:'
+            line: "  dynamic_module: resume"
+        - name: set dynamic module default uri
+          ansible.builtin.lineinfile:
+            path: "{{ code_dir }}/{{ use_project }}/config.yml"
+            regexp: 'dynamic_module_default_uri:'
+            line: "  dynamic_module_default_uri: splash"
         - name: clear cache
           command: "docker exec -i -u www-data app php ./vendor/bin/empathy --clear_cache"
         - name: copy dump file
