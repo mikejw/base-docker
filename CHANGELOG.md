@@ -2,6 +2,14 @@
 # Changelog
 
 
+
+## [1.1.4] - 2025-04-30
+
+### Fixed
+
+- Refactor logging container fix
+
+
 ## [1.1.3] - 2025-04-30
 
 ### Fixed

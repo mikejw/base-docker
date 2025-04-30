@@ -1,0 +1,21 @@
+
+- name: detect log dir subdir
+  stat:
+    path: "{{ code_dir }}/{{ use_project }}/logs/main.log"
+  register: st
+- name: remove log dir subdir
+  ansible.builtin.file:
+    path: "{{ code_dir }}/{{ use_project }}/logs/main.log"
+    state: absent
+  when: st.stat.isdir is defined and st.stat.isdir
+- name: create log dir
+  ansible.builtin.file:
+    path: "{{ code_dir }}/{{ use_project }}/logs"
+    state: directory
+    mode: '0755'
+- name: create empty log file
+  ansible.builtin.file:
+    path: "{{ code_dir }}/{{ use_project }}/logs/main.log"
+    state: touch
+    mode: u=rw,g=r,o=r
+
