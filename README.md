@@ -127,7 +127,7 @@ base empathy app with no extensions, (when no argument is provided).
 
 Others available are "elib-base", "elib-acl", "elib-blog" and "elib-cms".
 
-NB: elib-cms dummy content (database dump data and image upload) generated with ChatGPT!
+NB: elib-cms dummy content (database dump data, image upload, footer background image) generated with ChatGPT!
 
 The playbook will fail if codebase path already exists.
 

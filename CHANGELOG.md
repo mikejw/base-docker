@@ -2,6 +2,14 @@
 # Changelog
 
 
+## [1.1.3] - 2025-04-30
+
+### Fixed
+
+- Fix ELib CMS quickstart database dump
+- Update `README.md` to mention background image
+
+
 ## [1.1.2] - 2025-04-23
 
 ### Fixed
