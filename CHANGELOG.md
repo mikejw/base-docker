@@ -2,6 +2,12 @@
 # Changelog
 
 
+## [1.1.5] - 2025-05-16
+
+### Fixed
+
+- Add missing blog caching config
+
 
 ## [1.1.4] - 2025-04-30
 
