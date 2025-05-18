@@ -1,11 +1,11 @@
 {
     "require": {
     {% if template == 'elib-cms' %}
-        "mikejw/elib-cms": "dev-bootstrap4",
-        "mikejw/elib-siteinfo": "dev-bootstrap4",
+        "mikejw/elib-cms": "dev-master",
+        "mikejw/elib-siteinfo": "dev-master",
         "nesbot/carbon": "^3.0@dev"
     {% else %}
-        "mikejw/{% if template == 'vanilla' %}empathy{% else %}{{ template}}{% endif %}": "dev-{{ qs_branch }}"
+        "mikejw/{% if template == 'vanilla' %}empathy{% else %}{{ template}}{% endif %}": "dev-master"
     {% endif %}    
     },
     "minimum-stability": "dev"

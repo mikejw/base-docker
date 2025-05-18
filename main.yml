@@ -47,7 +47,6 @@
     use_developer: "{{ (saved_developer) | ternary(saved_developer, false) }}"
     operation: "{{ (op is defined) | ternary(op, 'none') }}"
     template: "{{ (tpl is defined) | ternary(tpl, 'vanilla') }}"
-    qs_branch: "{{ (template == 'elib-blog' or template == 'elib-cms') | ternary('bootstrap4', 'master') }}"
     partial_file: "{{ playbook_dir }}/docker-compose.partial.yml"
     partial_text: "{{ lookup('file', partial_file, lstrip=false, rstrip=false, errors='ignore') }}"
     composer_install_source: "{{ (use_developer) | ternary('--prefer-source', '') }}"
