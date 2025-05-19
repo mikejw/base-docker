@@ -5,16 +5,13 @@
   "keywords": [
     "lib"
   ],
-  "homepage": "http://empathyphp.co.uk",
+  "homepage": "https://empathy.sh",
   "license": "MIT",
   "authors": [
     {
       "name": "Mike Whiting",
-      "email": "mikejw3@gmail.com"
+      "email": "mail@mikejw.co.uk"
     }
   ],
-  "require": {
-    "mikejw/empathy": "dev-master"
-  },
   "minimum-stability": "dev"
 }
