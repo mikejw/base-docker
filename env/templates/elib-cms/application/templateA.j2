@@ -25,7 +25,8 @@ class templateA extends BaseTemplate
         return [
             'blurb' => $d->find(DataItem::FIND_LABEL, '/Blurb/'),
             'image' => $d->find(DataItem::FIND_LABEL, '/Profile/'),
-            'heading' => $d->find(DataItem::FIND_LABEL, '/Heading/')
+            'heading' => $d->find(DataItem::FIND_LABEL, '/Heading/'),
+            'template' => $s->template
         ];
     }
 
