@@ -85,7 +85,20 @@
           when: stsetup.stat.exists and stdump.stat.exists
         - name: populate db (setup)
           command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql setup"
-          when: stsetup.stat.exists and not stdump.stat.exists
+          when: stsetup.stat.exists and not stdump.stat.exists 
+        - name: check if build file contains remix
+          shell: docker exec -i -u www-data app ant -p | grep remix | wc -l | awk '{ print $1 }'
+          register: hasRemix 
+        - name: build react
+          shell: docker exec -i -u www-data app ant remix  
+          when: hasRemix.stdout | int == 1
+        - name: restart remix
+          community.docker.docker_compose_v2:
+            project_src: "{{ playbook_dir }}"
+            services:
+              - remix
+            recreate: always
+          when: hasRemix.stdout | int == 1  
       when: operation == "boot"
     - name: switch
       block:
