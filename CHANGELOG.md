@@ -2,6 +2,18 @@
 # Changelog
 
 
+## [1.2.0] - 2025-05-22
+
+### Added
+
+- Create headless CMS with React Router container front-end with `elib-cms` quickstart
+
+### Fixed
+
+- Stop containers as first task before populating any `docker-compose.yml`
+- Stop containers only when pre-existing `docker-compose.yml` file found
+
+
 ## [1.1.7] - 2025-05-19
 
 ### Fixed
