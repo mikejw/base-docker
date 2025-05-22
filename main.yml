@@ -38,10 +38,8 @@
       when: operation == "none"
     - name: boot
       block:
-        - name: stop any existing containers
-          community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
-            state: absent
+        - name: stop containers
+          include_tasks: "{{ playbook_dir }}/main_stop.yml"
         - name: partials
           include_tasks: "{{ playbook_dir }}/partials.yml"
         - name: populate docker-compose
@@ -123,10 +121,8 @@
           template:
             src: "{{ playbook_dir }}/env/templates/vanilla/composer.j2"
             dest: "{{ code_dir }}/{{ use_project }}/composer.json"
-        - name: stop any existing containers
-          community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
-            state: absent    
+        - name: stop containers
+          include_tasks: "{{ playbook_dir }}/main_stop.yml" 
         - name: partials
           include_tasks: "{{ playbook_dir }}/partials.yml" 
         - name: populate docker-compose
