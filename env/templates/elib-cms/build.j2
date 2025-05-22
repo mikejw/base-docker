@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="build" name="victor2">
+
+    <target depends="composer,npm,grunt,remix" name="build"/>
+
+    <target description="Installing dependencies" name="composer">
+        <exec executable="wget" failonerror="true">
+            <arg value="-nc"/>
+            <arg value="http://getcomposer.org/composer.phar"/>
+        </exec>
+        <exec executable="php" failonerror="true">
+            <arg value="composer.phar"/>
+            <arg value="install"/>
+            <arg value="--dev"/>
+            <arg value="--prefer-dist"/>
+            <arg value="--no-progress"/>
+        </exec>
+    </target>
+
+    <target description="Install dependencies with npm" name="npm">
+        <exec executable="npm">
+            <arg value="install" />
+        </exec>
+    </target>
+
+    <target description="Run grunt task runner" name="grunt">
+        <exec executable="./node_modules/grunt-cli/bin/grunt" />
+    </target>
+
+    <target description="prepare remix server" name="remix">
+        <delete dir="react/server/build"/>
+        <delete dir="react/server/public"/>
+        <delete dir="react/server/node_modules"/>
+        <delete file="react/server/package-lock.json"/>
+        <delete file="react/server/server.js"/>
+
+        <exec dir="react" executable="npm">
+            <arg value="install"/>
+        </exec>
+
+        <exec dir="react" executable="npm">
+            <arg value="run"/>
+            <arg value="build"/>
+        </exec>
+
+        <copy todir="react/server/build">
+            <fileset dir="react/build"/>
+        </copy>
+
+        <copy todir="react/server/public">
+            <fileset dir="react/public"/>
+        </copy>
+
+        <copy file="react/server.js" toDir="react/server"/>
+    </target>
+</project>

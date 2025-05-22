@@ -4,35 +4,11 @@
 ---
 
 
-# partials!
 - hosts: "{{ variable_host | default('control') }}"
   vars:
-    project_ini: "project section=Settings file={{ settings_dir }}/{{ settings_file }}"
-    saved_project: "{{ lookup('ini', project_ini) }}"
-    use_project: "{{ (cb is defined) | ternary(cb, saved_project) }}"
     env: "development"
     branch_id: ""
-    host_ini: "host section=Settings file={{ settings_dir }}/{{ settings_file }}"
-    saved_host: "{{ lookup('ini', host_ini) }}"
-    use_host: "{{ (saved_host != '') | ternary(saved_host, 'www.dev.org') }}"
     host_project_path: ""
-  tasks:
-    - name: detect services partial
-      stat:
-        path: "{{ code_dir }}/{{ use_project }}/env/docker-partial.j2"
-      register: st
-    - name: output stat
-      debug:
-        var: st
-    - name: populate docker-compose partial
-      template:
-        src: "{{ code_dir }}/{{ use_project }}/env/docker-partial.j2"
-        dest: "{{ playbook_dir }}/docker-compose.partial.yml"
-      when: st.stat.exists == true
-
-
-- hosts: "{{ variable_host | default('control') }}"
-  vars:
     arch_ini: "arch section=Settings file={{ settings_dir }}/{{ settings_file }}"
     host_ini: "host section=Settings file={{ settings_dir }}/{{ settings_file }}"
     project_ini: "project section=Settings file={{ settings_dir }}/{{ settings_file }}"
@@ -54,7 +30,7 @@
   tasks:
     - name: install pip packages
       include_tasks: "{{ playbook_dir }}/main_pip.yml"
-    - name: default
+    - name: boot
       block:
         - name: "show error"
           debug:
@@ -62,14 +38,16 @@
       when: operation == "none"
     - name: boot
       block:
-        - name: populate docker-compose
-          template:
-            src: "{{ playbook_dir }}/env/docker-compose.j2"
-            dest: "{{ playbook_dir }}/docker-compose.yml"
         - name: stop any existing containers
           community.docker.docker_compose_v2:
             project_src: "{{ playbook_dir }}"
             state: absent
+        - name: partials
+          include_tasks: "{{ playbook_dir }}/partials.yml"
+        - name: populate docker-compose
+          template:
+            src: "{{ playbook_dir }}/env/docker-compose.j2"
+            dest: "{{ playbook_dir }}/docker-compose.yml"
         - name: logging
           include_tasks: "{{ playbook_dir }}/main_logging.yml"
         - name: boot containers
@@ -107,7 +85,20 @@
           when: stsetup.stat.exists and stdump.stat.exists
         - name: populate db (setup)
           command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql setup"
-          when: stsetup.stat.exists and not stdump.stat.exists
+          when: stsetup.stat.exists and not stdump.stat.exists 
+        - name: check if build file contains remix
+          shell: docker exec -i -u www-data app ant -p | grep remix | wc -l | awk '{ print $1 }'
+          register: hasRemix 
+        - name: build react
+          shell: docker exec -i -u www-data app ant remix  
+          when: hasRemix.stdout | int == 1
+        - name: restart remix
+          community.docker.docker_compose_v2:
+            project_src: "{{ playbook_dir }}"
+            services:
+              - remix
+            recreate: always
+          when: hasRemix.stdout | int == 1  
       when: operation == "boot"
     - name: switch
       block:
@@ -132,20 +123,22 @@
           template:
             src: "{{ playbook_dir }}/env/templates/vanilla/composer.j2"
             dest: "{{ code_dir }}/{{ use_project }}/composer.json"
+        - name: stop any existing containers
+          community.docker.docker_compose_v2:
+            project_src: "{{ playbook_dir }}"
+            state: absent    
+        - name: partials
+          include_tasks: "{{ playbook_dir }}/partials.yml" 
         - name: populate docker-compose
           template:
             src: "{{ playbook_dir }}/env/docker-compose.j2"
             dest: "{{ playbook_dir }}/docker-compose.yml"
-        - name: stop any existing containers
-          community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
-            state: absent
         - name: logging
           include_tasks: "{{ playbook_dir }}/main_logging.yml"    
         - name: boot containers
           community.docker.docker_compose_v2:
             project_src: "{{ playbook_dir }}"
-            state: present
+            state: present    
         - name: install
           include_tasks: "{{ playbook_dir }}/main_install.yml"
         - name: configure
@@ -327,6 +320,14 @@
               version: "1.0"
         - name: assert site info plugin
           command: "docker exec -i -u www-data app php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"
+        - name: set json view plugin config
+          ansible.builtin.set_fact:
+            json:
+              name: JSONView
+              version: "1.0"
+              config: '[{ "resume": {} }]'
+        - name: assert json view plugin
+          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"   
         - name: create module dir resume
           file:
             path: "{{ code_dir }}/{{ use_project }}/application/resume"
@@ -383,6 +384,12 @@
             dest: "{{ code_dir }}/{{ use_project }}"
         - name: populate db
           command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql populate"
+        - name: restart remix
+          community.docker.docker_compose_v2:
+            project_src: "{{ playbook_dir }}"
+            services:
+              - remix
+            recreate: always
       when: operation == "qs" and template == "elib-cms"
     - name: qs elib-blog template
       block:

@@ -36,3 +36,16 @@
 - name: grunt
   shell: docker exec -i -u www-data app make grunt
   when: operation == "qs"
+- name: remix
+  block:
+    - name: extract react files
+      ansible.builtin.unarchive:
+        src: "{{ playbook_dir }}/env/templates/elib-cms/react.zip"
+        dest: "{{ code_dir }}/{{ use_project }}"
+    - name: populate build.xml
+      template:
+        src: "{{ playbook_dir }}/env/templates/elib-cms/build.j2"
+        dest: "{{ code_dir }}/{{ use_project }}/build.xml"
+    - name: build react
+      shell: docker exec -i -u www-data app ant remix
+  when: operation == "qs" and template == "elib-cms"  

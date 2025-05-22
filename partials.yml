@@ -1,0 +1,25 @@
+
+  
+- name: remix
+  block:
+    - name: create env dir
+      file:
+        path: "{{ code_dir }}/{{ use_project }}/env"
+        state: directory
+    - name: copy partial file
+      copy:
+        src: "{{ playbook_dir }}/env/templates/elib-cms/env/docker-partial.j2"
+        dest: "{{ code_dir }}/{{ use_project }}/env/docker-partial.j2"
+  when: operation == "qs" and template == "elib-cms"    
+- name: detect services partial
+  stat:
+    path: "{{ code_dir }}/{{ use_project }}/env/docker-partial.j2"
+  register: st
+- name: output stat
+  debug:
+    var: st
+- name: populate docker-compose partial
+  template:
+    src: "{{ code_dir }}/{{ use_project }}/env/docker-partial.j2"
+    dest: "{{ playbook_dir }}/docker-compose.partial.yml"
+  when: st.stat.exists == true

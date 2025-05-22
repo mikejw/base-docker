@@ -117,6 +117,7 @@ class templateB extends BaseTemplate
             'experience' => $expArr,
             'education' => $eduArr,
             'interests' => $d->find(DataItem::FIND_LABEL, '/Interests/'),
+            'template' => $s->template
         ];
     }
 

@@ -1,0 +1,22 @@
+#jinja2: trim_blocks:False
+
+{% set stack_id = (env == "test" and ((branch_id) != '' )) | ternary('-' + branch_id, '') %}
+
+{% set local_url = (use_host is defined) | ternary(use_host, url) %}
+
+{% set my_url = local_url.split('.',1)[-1] %}
+
+{% set project_dir = (env == "development") | ternary(code_dir + '/' + use_project, host_project_path + '/project') %}
+
+  remix:
+    container_name: remix{{ stack_id }}
+    image: registry.gitlab.com/mikejw/empathy/remix:latest
+    volumes:
+      - {{ project_dir }}/react/server:/home/node
+      - {{ project_dir }}:/home/node/project
+    environment:
+      - VIRTUAL_HOST={{ my_url }}, www.{{ my_url }}
+      - VIRTUAL_PORT=3000
+      - NODE_ENV=production
+      - MY_HOST={{ local_url }}
+
