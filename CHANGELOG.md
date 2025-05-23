@@ -2,11 +2,19 @@
 # Changelog
 
 
+## [1.3.0] - 2025-05-23
+
+### Changed
+
+- Update lib versions
+
+
 ## [1.2.0] - 2025-05-22
 
 ### Added
 
 - Create headless CMS with React Router container front-end with `elib-cms` quickstart
+
 
 ### Fixed
 

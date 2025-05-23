@@ -35,7 +35,7 @@ return [
 
         return $acl;
     },
-    'UserModel' => 'MobileUserItem',
+    'UserModel' => 'Empathy\ELib\Storage\MobileUserItem',
     'CurrentUser' => function (\DI\Container $c) {
         return new AclUser();
     }
