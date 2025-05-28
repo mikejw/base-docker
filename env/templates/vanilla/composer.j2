@@ -1,11 +1,11 @@
 {
     "require": {
     {% if template == 'elib-cms' %}
-        "mikejw/elib-cms": "^3",
-        "mikejw/elib-siteinfo": "^3.0",
+        "mikejw/elib-cms": "^4",
+        "mikejw/elib-siteinfo": "^4.0",
         "nesbot/carbon": "^3.0@dev"
     {% else %}
-        "mikejw/{% if template == 'vanilla' %}empathy{% else %}{{ template}}{% endif %}": "^3"
+        "mikejw/{% if template == 'vanilla' %}empathy{% else %}{{ template}}{% endif %}": "^4"
     {% endif %}    
     },
     "minimum-stability": "dev"

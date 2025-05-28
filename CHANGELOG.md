@@ -2,6 +2,14 @@
 # Changelog
 
 
+## [1.4.0] - 2025-05-28
+
+### Changed
+
+- Update lib versions
+- Update to Docker PHP 8.4 app container
+
+
 ## [1.3.0] - 2025-05-23
 
 ### Changed
