@@ -9,6 +9,10 @@
 - Update lib versions
 - Update to Docker PHP 8.4 app container
 
+### Fixed
+
+- Remove orphan containers on boot
+
 
 ## [1.3.0] - 2025-05-23
 
