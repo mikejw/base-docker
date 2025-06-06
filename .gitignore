@@ -14,3 +14,5 @@
 /roles
 /collections
 /code
+/env/vhost.d/*
+!/env/vhost.d/www.dev.org_location

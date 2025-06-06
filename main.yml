@@ -38,6 +38,8 @@
       when: operation == "none"
     - name: boot
       block:
+        - name: nginx config
+          include_tasks: "{{ playbook_dir }}/main_nginx.yml"
         - name: stop containers
           include_tasks: "{{ playbook_dir }}/main_stop.yml"
         - name: partials
@@ -146,6 +148,8 @@
       when: operation == "qs"
     - name: qs elib-base template
       block:
+        - name: nginx config
+          include_tasks: "{{ playbook_dir }}/main_nginx.yml"
         - name: populate elib.yml
           template:
             src: "{{ playbook_dir }}/env/templates/elib-base/elib.j2"

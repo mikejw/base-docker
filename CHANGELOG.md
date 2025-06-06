@@ -2,6 +2,13 @@
 # Changelog
 
 
+## [1.5.0] - 2025-06-06
+
+### Changed
+
+- Create nginx config file automatically (symlink) based on active host name
+
+
 ## [1.4.0] - 2025-05-28
 
 ### Changed
