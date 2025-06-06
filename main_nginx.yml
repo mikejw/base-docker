@@ -1,0 +1,12 @@
+
+
+- name: detect nginx config
+  stat:
+    path: "{{ playbook_dir }}/env/vhost.d/{{ use_host }}_location"
+  register: st
+- name: create symbolic link to main nginx config file
+  ansible.builtin.file:
+    src: "{{ playbook_dir }}/env/vhost.d/www.dev.org_location"
+    dest: "{{ playbook_dir }}/env/vhost.d/{{ use_host }}_location"
+    state: link
+  when: use_host != 'www.dev.org' and not st.stat.exists
