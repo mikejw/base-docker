@@ -133,7 +133,12 @@
             src: "{{ playbook_dir }}/env/docker-compose.j2"
             dest: "{{ playbook_dir }}/docker-compose.yml"
         - name: logging
-          include_tasks: "{{ playbook_dir }}/main_logging.yml"    
+          include_tasks: "{{ playbook_dir }}/main_logging.yml"
+        - name: create server directory
+          file:
+            path: "{{ code_dir }}/{{ use_project }}/react/server"
+            state: directory
+          when: template == 'elib-cms'  
         - name: boot containers
           community.docker.docker_compose_v2:
             project_src: "{{ playbook_dir }}"

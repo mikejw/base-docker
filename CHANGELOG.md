@@ -2,6 +2,13 @@
 # Changelog
 
 
+## [1.5.1] - 2025-06-07
+
+### Fixed
+
+- Create React Router server directory for ELib CMS quickstart
+
+
 ## [1.5.0] - 2025-06-06
 
 ### Changed
