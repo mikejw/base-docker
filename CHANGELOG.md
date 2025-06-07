@@ -2,6 +2,13 @@
 # Changelog
 
 
+## [1.5.2] - 2025-06-07
+
+### Fixed
+
+- Improve config loading in ELib CMS React files
+
+
 ## [1.5.1] - 2025-06-07
 
 ### Fixed
