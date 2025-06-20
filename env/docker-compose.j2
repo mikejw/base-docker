@@ -8,6 +8,8 @@ services:
 {% if use_arch != 'pi' %}
     platform: linux/x86_64
 {% endif %}
+    ports:
+      - 11211:11211
   app:
     container_name: app
 {% if use_arch != 'pi' %}

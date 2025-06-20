@@ -2,6 +2,13 @@
 # Changelog
 
 
+## [1.5.3] - 2025-06-20
+
+### Fixed
+
+- Expose memcache port
+
+
 ## [1.5.2] - 2025-06-07
 
 ### Fixed
