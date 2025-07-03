@@ -45,7 +45,8 @@ on your machine, using the `cd` command. E.g (on my machine):
 
 Then, run:
 
-<pre><code class="language-bash">vagrant up
+<pre><code class="language-bash">cd dev
+vagrant up
 </code></pre>
 
 Usage (with Caveats)
@@ -57,7 +58,8 @@ Once the machines have finished being provisioned, you can now follow the instru
 Before running any playbook, ssh into the `control` host
 and change into the `vagrant` directory:
 
-<pre><code class="language-bash">vagrant ssh control
+<pre><code class="language-bash">cd dev
+vagrant ssh control
 cd ./files/vagrant
 </code></pre>
 

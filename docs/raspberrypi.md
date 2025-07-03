@@ -50,13 +50,13 @@ Create a `/etc/hosts` file entry for `www.dev.org`:
 
 ##### Initialise base-docker config on the machine:
 
-<pre><code class="language-bash">cd ansible
+<pre><code class="language-bash">cd dev/ansible
 ansible-playbook ../init.yml -e "arch=pi"
 </code></pre>
 
 ##### Finally test the setup by bootstrappning a new Quickstart project:
 
-<pre><code class="language-bash">cd ansible
+<pre><code class="language-bash">cd dev/ansible
 ansible-playbook ../main.yml -e "op=qs cb=myproject tpl=elib-base"
 </code></pre>
 

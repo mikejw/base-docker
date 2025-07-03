@@ -2,6 +2,13 @@
 # Changelog
 
 
+## [1.7.0] - 2025-07-04
+
+### Changed
+
+- Restructure/refactor
+
+
 ## [1.6.0] - 2025-07-03
 
 ### Added

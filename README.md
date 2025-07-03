@@ -79,7 +79,7 @@ Usage
 
 ##### Initialise config on new machine:
 
-<pre><code class="language-bash">cd ansible
+<pre><code class="language-bash">cd dev/ansible
 ansible-playbook ../init.yml
 </code></pre>
 
@@ -87,7 +87,7 @@ This creates settings file for `base-docker` in `~/.config`.
 
 If you are using any hostname other than the default (`www.dev.org`), specify it with the `h` argument. E.g:
 
-<pre><code class="language-bash">cd ansible
+<pre><code class="language-bash">cd dev/ansible
 ansible-playbook ../init.yml -e "h=10.0.0.22"
 </code></pre>
 
@@ -96,7 +96,7 @@ ansible-playbook ../init.yml -e "h=10.0.0.22"
 
 Running the `init.yml` playbook, by default will disable this global flag. It can be enabled with:
 
-<pre><code class="language-bash">cd ansible
+<pre><code class="language-bash">cd dev/ansible
 ansible-playbook ../init.yml -e "dev=true"
 </code></pre>
 
@@ -106,7 +106,7 @@ during quickstart templating installs.
 
 ##### Switch project:
 
-<pre><code class="language-bash">cd ansible
+<pre><code class="language-bash">cd dev/ansible
 ansible-playbook ../main.yml -e "op=switch cb=a.ce"
 </code></pre>
 
@@ -115,7 +115,7 @@ In the above example the project found in `~/code/a.ce` will be set as active.
 
 ##### Boot current project:
 
-<pre><code class="language-bash">cd ansible
+<pre><code class="language-bash">cd dev/ansible
 ansible-playbook ../main.yml -e "op=boot"
 </code></pre>
 
@@ -131,7 +131,7 @@ NB: elib-cms dummy content (database dump data, image upload, footer background 
 
 The playbook will fail if codebase path already exists.
 
-<pre><code class="language-bash">cd ansible
+<pre><code class="language-bash">cd dev/ansible
 ansible-playbook ../main.yml -e "op=qs cb=myproject tpl=elib-base"
 </code></pre>
 
