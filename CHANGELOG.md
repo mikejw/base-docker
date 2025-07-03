@@ -2,6 +2,13 @@
 # Changelog
 
 
+## [1.6.0] - 2025-07-03
+
+### Added
+
+- Create default BDCLI secrets keys
+
+
 ## [1.5.3] - 2025-06-20
 
 ### Fixed
