@@ -10,7 +10,7 @@
 !/dev/db/log/.gitkeep
 /dev/docker-compose.yml
 /dev/docker-compose.partial.yml
-/dev/roles
-/dev/collections
+/roles
+/collections
 /dev/env/vhost.d/*
 !/dev/env/vhost.d/www.dev.org_location
