@@ -1,0 +1,12 @@
+
+- hosts: control
+  gather_facts: false
+  vars:
+    ansible_connection: local
+  vars_files:
+    - ~/.config/base-docker/settings.yml
+  tasks:
+    - name: template the hosts file
+      template:
+        src: "{{ playbook_dir}}/ansible/env/hosts.j2"
+        dest: "{{ playbook_dir }}/ansible/hosts"
