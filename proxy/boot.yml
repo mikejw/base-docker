@@ -24,4 +24,29 @@
       vars:
         tailscale_authkey: "{{ secrets_vals.ts_authkey }}"  
 
+- hosts: proxy
+  gather_facts: false
+  tasks:
+    - name: copy install script
+      copy:
+        src: "{{ playbook_dir }}/caddy.sh"
+        dest: "/root/caddy.sh"
+    - name: copy customise script
+      copy:
+        src: "{{ playbook_dir }}/caddy_custom.sh"
+        dest: "/root/caddy_custom.sh"
+    - name: install caddy
+      ansible.builtin.shell:
+        cmd: . ./caddy.sh
+        chdir: /root
+    - name: download custom caddy
+      ansible.builtin.get_url:
+        url: https://caddyserver.com/api/download?os=linux&arch=amd64&p=github.com%2Fcaddy-dns%2Fcloudflare&idempotency=4141828357875
+        dest: /root/caddy
+    - name: custom caddy
+      ansible.builtin.shell:
+        cmd: . ./caddy_custom.sh
+        chdir: /root    
+           
+       
 
