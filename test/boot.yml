@@ -22,7 +22,10 @@
       ansible.builtin.include_role:
         name: artis3n.tailscale.machine
       vars:
-        tailscale_authkey: "{{ secrets_vals.ts_authkey }}"  
+        tailscale_authkey: "{{ secrets_vals.ts_authkey }}" 
+    - name: output ip
+      debug:
+        msg: "Tailscale IP: {{ tailscale_node_ipv4 }}"    
 
 
        
