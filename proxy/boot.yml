@@ -18,15 +18,21 @@
       include_vars:
         file: "~/.config/base-docker/secrets.yml"
         name: secrets_vals
-    - name: Join Tailscale network
+    - name: join tailscale network
       ansible.builtin.include_role:
         name: artis3n.tailscale.machine
       vars:
-        tailscale_authkey: "{{ secrets_vals.ts_authkey }}"  
+        tailscale_authkey: "{{ secrets_vals.ts_authkey }}"
 
 - hosts: proxy
   gather_facts: false
+  vars_files:
+    - ~/.config/base-docker/settings.yml
   tasks:
+    - name: read encrypted values
+      include_vars:
+        file: "~/.config/base-docker/secrets.yml"
+        name: secrets_vals
     - name: copy install script
       copy:
         src: "{{ playbook_dir }}/caddy.sh"
@@ -39,6 +45,12 @@
       ansible.builtin.shell:
         cmd: . ./caddy.sh
         chdir: /root
+    - name: insert Caddyfile
+      template:
+        src: "{{ playbook_dir }}/env/Caddyfile.j2"
+        dest: "/etc/caddy/Caddyfile"
+        owner: "root"
+        group: "root"    
     - name: download custom caddy
       ansible.builtin.get_url:
         url: https://caddyserver.com/api/download?os=linux&arch=amd64&p=github.com%2Fcaddy-dns%2Fcloudflare&idempotency=4141828357875

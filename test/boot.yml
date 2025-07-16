@@ -13,20 +13,75 @@
   gather_facts: true
   vars_files:
     - ~/.config/base-docker/settings.yml
+  vars:
+      
   tasks:
     - name: read encrypted values
       include_vars:
         file: "~/.config/base-docker/secrets.yml"
         name: secrets_vals
-    - name: Join Tailscale network
+    - name: join tailscale network
       ansible.builtin.include_role:
         name: artis3n.tailscale.machine
       vars:
-        tailscale_authkey: "{{ secrets_vals.ts_authkey }}" 
+        tailscale_authkey: "{{ secrets_vals.ts_authkey }}"
+    - name: install base-docker
+      ansible.builtin.include_role:
+        name: geerlingguy.docker
+    - name: adding user to group docker
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes    
+    - name: create jenkins mount dir
+      file:
+        path: "/home/{{ ansible_user }}/jenkins"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+    - name: create nginx-proxy vhost.d dir
+      file:
+        path: "/home/{{ ansible_user }}/vhost.d"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"     
+    - name: create docker compose dir
+      file:
+        path: "/home/{{ ansible_user }}/docker"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+    - name: insert docker compose file
+      template:
+        src: "{{ playbook_dir }}/env/docker-compose.j2"
+        dest: "/home/{{ ansible_user }}/docker/docker-compose.yml"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+    - name: create nginx network
+      docker_network:
+        name: nginx-proxy
+        state: present    
+    - name: run jenkins/proxy service
+      become_user: "{{ ansible_user }}"
+      community.docker.docker_compose_v2:
+        project_src: "/home/{{ ansible_user }}/docker"
+        state: present
+    - name: run tailscale status and extract IP
+      shell: tailscale status | grep test-tailscale-nginx | awk '{print $1}'
+      register: tailscale_ip     
     - name: output ip
       debug:
-        msg: "Tailscale IP: {{ tailscale_node_ipv4 }}"    
+        msg: "Tailscale IP: {{ tailscale_ip.stdout }}"
+    - name: detect jenkins unlock password
+      stat:
+        path: "/home/{{ ansible_user }}/jenkins/secrets/initialAdminPassword"
+      register: st    
+    - name: extract initial admin password
+      shell: cat /home/{{ ansible_user }}/jenkins/secrets/initialAdminPassword
+      register: jenkins_unlock_pw
+      when: st.stat.exists == true    
+    - name: output jenkins unlock password
+      debug:
+        msg: "Jenkins Unlock Password: {{ jenkins_unlock_pw.stdout| default('[UNLOCKED]') }}"        
 
-
-       
-
+      

@@ -1,0 +1,36 @@
+
+
+(cloudflare) {
+  tls {
+    # edit Zone dns API key
+    dns cloudflare {{ secrets_vals.cf_zone_dns_api_key }}
+    resolvers 1.1.1.1 1.0.0.1
+  }
+}
+
+*.staging.{{ hosts.proxy_domain }} {
+  reverse_proxy http://{{ hosts.test_ts_ip }}:80
+  import cloudflare
+}
+
+{{ hosts.proxy_domain }} {
+    redir https://www.{{ hosts.proxy_domain }}{uri} permanent
+}
+
+www.{{ hosts.proxy_domain }} {
+  # Set this path to your site's directory.
+  root * /usr/share/caddy
+
+  encode gzip
+
+  # Enable the static file server.
+  file_server
+
+  # Another common task is to set up a reverse proxy:
+  # reverse_proxy localhost:8080
+
+  # Or serve a PHP site through php-fpm:
+  # php_fastcgi localhost:9000
+
+  import cloudflare
+}
