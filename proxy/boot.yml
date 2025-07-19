@@ -61,4 +61,10 @@
         chdir: /root    
            
        
-
+- hosts: control
+  gather_facts: false
+  tasks:
+    - name: remove temp pem file
+      ansible.builtin.file:
+        path: /tmp/private.pem
+        state: absent
