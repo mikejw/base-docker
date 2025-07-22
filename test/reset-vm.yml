@@ -1,0 +1,14 @@
+
+
+- name: power off
+  ansible.builtin.shell: >
+    {{ vboxmanage }} controlvm "{{ vm_name }}" poweroff || true
+
+- name: restore snapshot
+  ansible.builtin.shell: >
+    {{ vboxmanage }} snapshot "{{ vm_name }}" restore "{{ snapshot_name }}"
+
+- name: start vm
+  ansible.builtin.shell: >
+    {{ vboxmanage }} startvm "{{ vm_name }}"
+ # {{ vboxmanage }} startvm "{{ vm_name }}" --type headless

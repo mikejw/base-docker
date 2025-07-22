@@ -1,4 +1,13 @@
 
+- hosts: control
+  vars_files:
+    - ~/.config/base-docker/settings.yml
+  tasks:
+    - name: wait for ssh
+      ansible.builtin.wait_for:
+        host: "{{ hosts.test_ip }}"
+        port: 22
+        timeout: 120
 
 - hosts: test
   gather_facts: false
@@ -12,9 +21,7 @@
 - hosts: test
   gather_facts: true
   vars_files:
-    - ~/.config/base-docker/settings.yml
-  vars:
-      
+    - ~/.config/base-docker/settings.yml    
   tasks:
     - name: read encrypted values
       include_vars:
@@ -32,7 +39,13 @@
       user:
         name: "{{ ansible_user }}"
         groups: docker
-        append: yes    
+        append: yes
+
+- hosts: test
+  gather_facts: true
+  vars_files:
+    - ~/.config/base-docker/settings.yml    
+  tasks:           
     - name: create jenkins mount dir
       file:
         path: "/home/{{ ansible_user }}/jenkins"
@@ -82,6 +95,5 @@
       when: st.stat.exists == true    
     - name: output jenkins unlock password
       debug:
-        msg: "Jenkins Unlock Password: {{ jenkins_unlock_pw.stdout| default('[UNLOCKED]') }}"        
+        msg: "Jenkins Unlock Password: {{ jenkins_unlock_pw.stdout | default('[UNLOCKED]') }}"        
 
-      

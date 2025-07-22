@@ -1,0 +1,22 @@
+
+
+- hosts: control
+  gather_facts: false
+  tasks:
+    - name: add test_host to vm_reset group if defined
+      add_host:
+        name: test_host
+        groups: vm_reset
+      when: "'test_host' in hostvars"
+
+- hosts: vm_reset
+  gather_facts: false
+  vars_files:
+    - ~/.config/base-docker/settings.yml
+  vars:
+    vm_name: "{{ hosts.test_host_vm }}"
+    snapshot_name: "{{ hosts.test_host_snapshot }}"
+    vboxmanage: /usr/bin/VBoxManage  
+  tasks:
+    - name: run reset
+      include_tasks: "{{ playbook_dir }}/reset-vm.yml"
