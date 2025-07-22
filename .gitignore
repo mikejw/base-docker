@@ -16,3 +16,4 @@
 !/dev/env/vhost.d/www.dev.org_location
 
 /proxy/ansible/hosts
+/test/ansible/hosts
