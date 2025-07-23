@@ -9,6 +9,7 @@
         groups: vm_reset
       when: "'test_host' in hostvars"
 
+
 - hosts: vm_reset
   gather_facts: false
   vars_files:
@@ -20,3 +21,4 @@
   tasks:
     - name: run reset
       include_tasks: "{{ playbook_dir }}/reset-vm.yml"
+

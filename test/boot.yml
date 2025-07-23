@@ -1,7 +1,9 @@
 
+
 - hosts: control
   vars_files:
     - ~/.config/base-docker/settings.yml
+  gather_facts: false
   tasks:
     - name: wait for ssh
       ansible.builtin.wait_for:
@@ -17,7 +19,7 @@
     - name: set hostname
       command:
         cmd: "hostnamectl set-hostname {{ hosts.test_host }}"
-      
+
 - hosts: test
   gather_facts: true
   vars_files:
@@ -40,12 +42,6 @@
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
-
-- hosts: test
-  gather_facts: true
-  vars_files:
-    - ~/.config/base-docker/settings.yml    
-  tasks:           
     - name: create jenkins mount dir
       file:
         path: "/home/{{ ansible_user }}/jenkins"
@@ -71,16 +67,35 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
     - name: create nginx network
-      docker_network:
+      community.docker.docker_network:
         name: nginx-proxy
-        state: present    
-    - name: run jenkins/proxy service
-      become_user: "{{ ansible_user }}"
+        state: present
+      become: true     
+
+- hosts: test
+  gather_facts: false
+  vars_files:
+    - ~/.config/base-docker/settings.yml    
+  tasks:
+    - name: pull docker images
+      community.docker.docker_image:
+        name: "{{ item }}"
+        source: pull
+        pull:
+      loop:
+        - registry.gitlab.com/mikejw/empathy/jenkins-gig:jdk17
+        - tailscale/tailscale:latest
+        - jwilder/nginx-proxy  
+    - name: run jenkins and proxy
       community.docker.docker_compose_v2:
         project_src: "/home/{{ ansible_user }}/docker"
         state: present
-    - name: run tailscale status and extract IP
-      shell: tailscale status | grep test-tailscale-nginx | awk '{print $1}'
+      #become: true
+      register: compose_output
+      no_log: false 
+      changed_when: false
+    - name: run tailscale status and extract ip
+      shell: tailscale status | grep test-tailscale-nginx | grep -Ev '\boffline$' | awk '{print $1}'
       register: tailscale_ip     
     - name: output ip
       debug:
@@ -90,7 +105,7 @@
         path: "/home/{{ ansible_user }}/jenkins/secrets/initialAdminPassword"
       register: st    
     - name: extract initial admin password
-      shell: cat /home/{{ ansible_user }}/jenkins/secrets/initialAdminPassword
+      shell: "cat /home/{{ ansible_user }}/jenkins/secrets/initialAdminPassword"
       register: jenkins_unlock_pw
       when: st.stat.exists == true    
     - name: output jenkins unlock password

@@ -3,8 +3,10 @@ roles:
   - src: geerlingguy.docker
 
 collections:
-  - name:  community.docker
-  - name:  artis3n.tailscale
+  - name: community.docker
+  - name: artis3n.tailscale
+
+
 
 
 

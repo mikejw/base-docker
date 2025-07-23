@@ -11,4 +11,4 @@
 - name: start vm
   ansible.builtin.shell: >
     {{ vboxmanage }} startvm "{{ vm_name }}"
- # {{ vboxmanage }} startvm "{{ vm_name }}" --type headless
+
