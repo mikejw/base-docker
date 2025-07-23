@@ -34,7 +34,7 @@
         name: artis3n.tailscale.machine
       vars:
         tailscale_authkey: "{{ secrets_vals.ts_authkey }}"
-    - name: install base-docker
+    - name: install docker
       ansible.builtin.include_role:
         name: geerlingguy.docker
     - name: adding user to group docker
@@ -86,6 +86,15 @@
         - registry.gitlab.com/mikejw/empathy/jenkins-gig:jdk17
         - tailscale/tailscale:latest
         - jwilder/nginx-proxy  
+
+
+# <-- Snapshot 9
+
+- hosts: test
+  gather_facts: false
+  vars_files:
+    - ~/.config/base-docker/settings.yml    
+  tasks:
     - name: run jenkins and proxy
       community.docker.docker_compose_v2:
         project_src: "/home/{{ ansible_user }}/docker"
@@ -94,9 +103,17 @@
       register: compose_output
       no_log: false 
       changed_when: false
-    - name: run tailscale status and extract ip
-      shell: tailscale status | grep test-tailscale-nginx | grep -Ev '\boffline$' | awk '{print $1}'
-      register: tailscale_ip     
+    - name: wait for tailscale service to appear
+      shell: |
+        tailscale status \
+        | grep test-tailscale-nginx \
+        | grep -Ev '\boffline$' \
+        | awk '{print $1}'
+      register: tailscale_ip
+      changed_when: false
+      retries: 30
+      delay: 5
+      until: tailscale_ip.stdout != ""   
     - name: output ip
       debug:
         msg: "Tailscale IP: {{ tailscale_ip.stdout }}"
@@ -110,5 +127,5 @@
       when: st.stat.exists == true    
     - name: output jenkins unlock password
       debug:
-        msg: "Jenkins Unlock Password: {{ jenkins_unlock_pw.stdout | default('[UNLOCKED]') }}"        
+        msg: "Jenkins Unlock Password: {{ jenkins_unlock_pw.stdout | default('[UNLOCKED OR NOT BOOTED]') }}"    
 
