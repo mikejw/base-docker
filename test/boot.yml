@@ -89,12 +89,25 @@
 
 
 # <-- Snapshot 3
-
 - hosts: test
   gather_facts: false
   vars_files:
     - ~/.config/base-docker/settings.yml    
   tasks:
+    - name: ensure init.groovy.d exists
+      file:
+        path: "/home/{{ ansible_user }}/jenkins/init.groovy.d"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+    - name: copy init scripts to home
+      copy:
+        src: "{{ playbook_dir }}/env/init.groovy.d/"
+        dest: "/home/{{ ansible_user }}/jenkins/init.groovy.d/"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
     - name: run jenkins and proxy
       community.docker.docker_compose_v2:
         project_src: "/home/{{ ansible_user }}/docker"
@@ -127,5 +140,16 @@
       when: st.stat.exists == true    
     - name: output jenkins unlock password
       debug:
-        msg: "Jenkins Unlock Password: {{ jenkins_unlock_pw.stdout | default('[UNLOCKED OR NOT BOOTED]') }}"    
+        msg: "Jenkins Unlock Password: {{ jenkins_unlock_pw.stdout | default('[UNLOCKED OR NOT BOOTED]') }}"
+    - name: wait for jenkins to finish bootstrapping
+      stat:
+        path: /home/{{ ansible_user }}/jenkins/.jenkins-ready
+      register: jenkins_ready
+      retries: 30
+      delay: 5
+      until: jenkins_ready.stat.exists
+    - name: restart jenkins container
+      shell: docker compose restart jenkins-gig
+      args:
+        chdir: "/home/{{ ansible_user }}/docker"
 
