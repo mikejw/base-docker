@@ -17,3 +17,5 @@
 
 /proxy/ansible/hosts
 /test/ansible/hosts
+/test/vagrant/.vagrant
+
