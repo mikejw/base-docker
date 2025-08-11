@@ -153,3 +153,11 @@
       args:
         chdir: "/home/{{ ansible_user }}/docker"
 
+
+- hosts: control
+  gather_facts: false
+  tasks:
+    - name: remove temp pem file
+      ansible.builtin.file:
+        path: /tmp/private.pem
+        state: absent

@@ -10,3 +10,13 @@
       template:
         src: "{{ playbook_dir}}/ansible/env/hosts.j2"
         dest: "{{ playbook_dir }}/ansible/hosts"
+    - name: read encrypted values
+      include_vars:
+        file: "~/.config/base-docker/secrets.yml"
+        name: secrets_vals
+    - name: create temp pem file
+      copy:
+        content: "{{ secrets_vals.pem.test }}"
+        dest: /tmp/private.pem
+        mode: '0600'
+        

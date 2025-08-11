@@ -3,6 +3,8 @@
   hosts: all
   become: true
   gather_facts: true
+  vars:
+    bdcli_pub_path: "/tmp/bd-key/20250811_200409/key.pub"
 
   tasks:
     - name: update apt cache
@@ -16,3 +18,9 @@
           - git
           - curl
         state: present
+
+    - name: authorize bdcli key for vagrant
+      ansible.builtin.authorized_key:
+        user: vagrant
+        state: present
+        key: "{{ lookup('file', bdcli_pub_path) }}"

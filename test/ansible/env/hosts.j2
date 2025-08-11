@@ -1,9 +1,6 @@
 
-
-
-
 control 	ansible_host=127.0.0.1
-test		ansible_host={{ hosts.test_ip }} ansible_user={{ hosts.test_user }}
+test		ansible_host={{ hosts.test_ip }} ansible_user={{ hosts.test_user }} ansible_ssh_private_key_file=/tmp/private.pem
 {% if hosts.test_host_host is defined and
     hosts.test_host_user is defined and
     hosts.test_host_snapshot is defined and
