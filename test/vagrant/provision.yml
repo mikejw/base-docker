@@ -4,7 +4,7 @@
   become: true
   gather_facts: true
   vars:
-    bdcli_pub_path: "/tmp/bd-key/20250811_200409/key.pub"
+    bdcli_pub_path: "/tmp/bd-key/latest/key.pub"
 
   tasks:
     - name: update apt cache
