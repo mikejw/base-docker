@@ -5,14 +5,16 @@ Requires=docker.service
 After=docker.service
 
 [Service]
-Restart=always
 User={{ ansible_user }}
 Group={{ ansible_user }}
+Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=/home/{{ ansible_user }}/docker
-ExecStart=docker compose up -d
-ExecStop=docker compose stop
+ExecStart=/usr/bin/docker compose up -d --remove-orphans
+ExecReload=/usr/bin/docker compose up -d --remove-orphans
+ExecStop=/usr/bin/docker compose stop
 TimeoutStartSec=0
+TimeoutStopSec=60
 
 [Install]
 WantedBy=multi-user.target
