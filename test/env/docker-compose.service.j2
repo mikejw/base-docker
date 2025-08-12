@@ -1,0 +1,18 @@
+
+[Unit]
+Description=Docker Compose - Jenkins
+Requires=docker.service
+After=docker.service
+
+[Service]
+Restart=always
+User={{ ansible_user }}
+Group={{ ansible_user }}
+RemainAfterExit=yes
+WorkingDirectory=/home/{{ ansible_user }}/docker
+ExecStart=docker compose up -d
+ExecStop=docker compose stop
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

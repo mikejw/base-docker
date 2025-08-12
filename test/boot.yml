@@ -148,11 +148,20 @@
       retries: 30
       delay: 5
       until: jenkins_ready.stat.exists
-    - name: restart jenkins container
-      shell: docker compose restart jenkins-gig
-      args:
-        chdir: "/home/{{ ansible_user }}/docker"
-
+    - name: create docker compose service
+      become: true
+      template:
+        src: "{{ playbook_dir }}/env/docker-compose.service.j2"
+        dest: "/etc/systemd/system/docker-compose.service"
+        owner: "root"
+        group: "root"
+    - name: enable service
+      shell: systemctl enable docker-compose
+      become: true
+    - name: start jenkins container
+      shell: systemctl start docker-compose
+      become: true
+      
 
 - hosts: control
   gather_facts: false
