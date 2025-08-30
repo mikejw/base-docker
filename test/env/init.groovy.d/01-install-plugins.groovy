@@ -18,6 +18,7 @@ def pluginNames = [
   "workflow-scm-step", "workflow-durable-task-step", "pipeline-stage-view",
   "pipeline-input-step", "pipeline-github-lib",
   "pipeline-model-api", "pipeline-model-definition", "pipeline-model-extensions",
+  "pipeline-utility-steps",
 
   // Git / SCM
   "git", "git-client", "github", "ssh-credentials", "scm-api",
