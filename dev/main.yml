@@ -55,6 +55,8 @@
             project_src: "{{ playbook_dir }}"
             state: present
             remove_orphans: true
+            env_files: 
+              - "{{ code_dir }}/{{ use_project }}/.env"
         # is below possible when
         # potentially an open docker port is
         # being detected?
