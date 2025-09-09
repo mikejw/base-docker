@@ -2,11 +2,11 @@
 - hosts: "{{ variable_host | default('control') }}"
   gather_facts: no
   vars:
-    arch_string: "{{ (arch is defined) | ternary(arch, '') }}"
-    use_arch: "{{ (arch_string == 'pi') | ternary('pi', '') }}"
-    use_host: "{{ (h is defined) | ternary(h, 'www.dev.org') }}"
-    use_project: "{{ (cb is defined) | ternary(cb, 'my_project') }}"
-    use_developer: "{{ (dev is defined) | ternary(dev, false) }}"
+    arch_string: "{{ arch | default('') }}"
+    use_arch: "{{ 'pi' if (arch_string | default('')) == 'pi' else '' }}"
+    use_host: "{{ h | default('www.dev.org') }}"
+    use_project: "{{ cb | default('my_project') }}"
+    use_developer: "{{ dev | default(false) }}"
 
   tasks:        
     - name: create config directory

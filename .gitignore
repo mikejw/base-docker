@@ -15,6 +15,9 @@
 /dev/env/vhost.d/*
 !/dev/env/vhost.d/www.dev.org_location
 
+/dev/code
+/dev/roles
+
 /proxy/ansible/hosts
 /test/ansible/hosts
 /test/vagrant/.vagrant
