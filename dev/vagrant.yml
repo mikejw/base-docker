@@ -28,9 +28,9 @@
       ansible.builtin.hostname:
         name: node
         use: systemd
-    - name: adding existing user '{{ user }}' to group sudo
+    - name: "adding existing user {{ ansible_user }} to group docker"
       user:
-        name: vagrant
+        name: "{{ ansible_user }}"
         groups: docker
         append: yes
     - name: project(s) dir
@@ -52,8 +52,8 @@
     - name: ensure www.dev.org points to node
       ansible.builtin.lineinfile:
         path: /etc/hosts
-        regexp: '^127.0.1.1\subuntu-lunar\subuntu-lunar'
-        line: "127.0.1.1\tubuntu-lunar\tubuntu-lunar\twww.dev.org"
+        regexp: '^127\.0\.1\.1\s+localhost'
+        line: "127.0.1.1\tlocalhost\twww.dev.org cms.dev.org go.dev.org"
 
 
 ...

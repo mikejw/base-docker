@@ -1,7 +1,8 @@
 ---
+
 roles:
   - src: geerlingguy.docker
 
 collections:
-  - name:  community.docker
+  - name: community.docker
 

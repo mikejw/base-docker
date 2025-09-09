@@ -1,5 +1,11 @@
 
-  
+
+- name: set partial text
+  set_fact:
+    partial_text: "" 
+- name: set partial filename
+  set_fact:
+    partial_file: "{{ playbook_dir }}/docker-compose.partial.yml"  
 - name: remix
   block:
     - name: create env dir
@@ -21,5 +27,14 @@
 - name: populate docker-compose partial
   template:
     src: "{{ code_dir }}/{{ use_project }}/env/docker-partial.j2"
-    dest: "{{ playbook_dir }}/docker-compose.partial.yml"
+    dest: "{{ partial_file }}"
   when: st.stat.exists == true
+
+- name: check for generated partials file
+  stat:
+    path: "{{ partial_file }}"
+  register: partial_stat
+- name: set partials contents
+  set_fact:
+    partial_text: "{{ lookup('file', partial_file, lstrip=false, rstrip=false, errors='ignore') }}"
+  when: partial_stat.stat.exists  
