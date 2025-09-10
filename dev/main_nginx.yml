@@ -2,7 +2,7 @@
 
 - name: detect nginx config
   stat:
-    path: "{{ playbook_dir }}/env/vhost.d/{{ use_host }}_location"
+    path: "{{ compose_dir }}/env/vhost.d/{{ use_host }}_location"
   register: st
 - name: create symbolic link to main nginx config file
   ansible.builtin.file:
@@ -13,7 +13,6 @@
 - name: copy file when using 'node'
   copy:
     src: "{{ playbook_dir }}/env/vhost.d/www.dev.org_location"
-    dest: "{{ playbook_dir }}/env/vhost.d/{{ use_host }}_location"
+    dest: "{{ compose_dir }}/env/vhost.d/{{ use_host }}_location"
   when: use_host != 'www.dev.org' and not st.stat.exists and variable_host == 'node'
 
-  
