@@ -1,0 +1,29 @@
+
+
+- name: vhost.d dirs
+  block:
+    - name: ensure env dir exists (and is writable by vagrant)
+      become: true
+      ansible.builtin.file:
+        path: "{{ compose_dir }}/env"
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: "0775"
+    - name: ensure env/vhost.d dir exists (and is writable by vagrant)
+      become: true
+      ansible.builtin.file:
+        path: "{{ compose_dir }}/env/vhost.d"
+        state: directory
+        owner: vagrant
+        group: vagrant
+        mode: "0775"
+  when: variable_host == 'node'
+
+- name: boot
+  community.docker.docker_compose_v2:
+    project_src: "{{ compose_dir }}"
+    state: present
+    remove_orphans: true
+ 
+ 

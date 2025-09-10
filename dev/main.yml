@@ -51,10 +51,7 @@
         - name: logging
           include_tasks: "{{ playbook_dir }}/main_logging.yml"
         - name: boot containers
-          community.docker.docker_compose_v2:
-            project_src: "{{ compose_dir }}"
-            state: present
-            remove_orphans: true
+          include_tasks: "{{ playbook_dir }}/main_boot.yml"
         # is below possible when
         # potentially an open docker port is
         # being detected?
@@ -140,10 +137,7 @@
             state: directory
           when: template == 'elib-cms'  
         - name: boot containers
-          community.docker.docker_compose_v2:
-            project_src: "{{ compose_dir }}"
-            state: present
-            remove_orphans: true
+          include_tasks: "{{ playbook_dir }}/main_boot.yml"
         - name: install
           include_tasks: "{{ playbook_dir }}/main_install.yml"
         - name: configure
