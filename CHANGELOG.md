@@ -2,6 +2,13 @@
 # Changelog
 
 
+## [2.0.3] - 2025-09-10
+
+### Fixed
+
+- Mount on `control` VM
+
+
 ## [2.0.2] - 2025-09-10
 
 ### Fixed
