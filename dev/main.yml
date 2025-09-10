@@ -24,6 +24,7 @@
     operation: "{{ (op is defined) | ternary(op, 'none') }}"
     template: "{{ (tpl is defined) | ternary(tpl, 'vanilla') }}"
     composer_install_source: "{{ (use_developer) | ternary('--prefer-source', '') }}"
+    compose_dir: "{{ (variable_host == 'node') | ternary('/home/vagrant/files', playbook_dir) }}"
   gather_facts: no
   tasks:
     - name: install pip packages
@@ -45,12 +46,12 @@
         - name: populate docker-compose
           template:
             src: "{{ playbook_dir }}/env/docker-compose.j2"
-            dest: "{{ playbook_dir }}/docker-compose.yml"
+            dest: "{{ compose_dir }}/docker-compose.yml"
         - name: logging
           include_tasks: "{{ playbook_dir }}/main_logging.yml"
         - name: boot containers
           community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
+            project_src: "{{ compose_dir }}"
             state: present
             remove_orphans: true
         # is below possible when
@@ -93,7 +94,7 @@
           when: hasRemix.stdout | int == 1
         - name: restart remix
           community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
+            project_src: "{{ compose_dir }}"
             services:
               - remix
             recreate: always
@@ -129,7 +130,7 @@
         - name: populate docker-compose
           template:
             src: "{{ playbook_dir }}/env/docker-compose.j2"
-            dest: "{{ playbook_dir }}/docker-compose.yml"
+            dest: "{{ compose_dir }}/docker-compose.yml"
         - name: logging
           include_tasks: "{{ playbook_dir }}/main_logging.yml"
         - name: create server directory
@@ -139,7 +140,7 @@
           when: template == 'elib-cms'  
         - name: boot containers
           community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
+            project_src: "{{ compose_dir }}"
             state: present
             remove_orphans: true
         - name: install
@@ -391,7 +392,7 @@
           command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql populate"
         - name: restart remix
           community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
+            project_src: "{{ compose_dir }}"
             services:
               - remix
             recreate: always
