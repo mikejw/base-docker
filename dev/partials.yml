@@ -35,7 +35,15 @@
   stat:
     path: "{{ partial_file }}"
   register: partial_stat
+
+- name: read partial from remote
+  ansible.builtin.slurp:
+    src: "{{ partial_file }}"
+  register: partial_slurp
+  when: partial_stat.stat.exists
+
 - name: set partials contents
-  set_fact:
-    partial_text: "{{ lookup('file', partial_file, lstrip=false, rstrip=false, errors='ignore') }}"
-  when: partial_stat.stat.exists  
+  ansible.builtin.set_fact:
+    partial_text: "{{ partial_slurp.content | b64decode }}"
+  when: partial_stat.stat.exists
+  
