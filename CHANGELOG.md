@@ -9,6 +9,7 @@
 - Mount on `control` VM
 - Use currect compose dir on `control` VM
 - Use correct code dirs for partials templating
+- Install unzip to `node` VM
 
 
 ## [2.0.2] - 2025-09-10
