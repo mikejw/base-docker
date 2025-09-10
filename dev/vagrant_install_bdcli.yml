@@ -1,0 +1,99 @@
+- name: Ensure unzip is installed (Debian/Ubuntu)
+  apt:
+    name: 
+      - unzip
+      - git
+    state: present
+    update_cache: yes
+
+- name: Query latest GitHub release (public repo)
+  uri:
+    url: "https://api.github.com/repos/{{ gh_owner }}/{{ gh_repo }}/releases/latest"
+    method: GET
+    return_content: true
+    headers:
+      Accept: "application/vnd.github+json"
+      User-Agent: "ansible"
+  register: gh_latest
+
+# Pick the first asset whose name contains 'linux_amd64.zip' (case-insensitive)
+- name: Select linux-amd64 zip asset
+  set_fact:
+    selected_asset: "{{ item }}"
+  loop: "{{ gh_latest.json.assets | default([]) }}"
+  when:
+    - item.name is defined
+    - "'linux_amd64.zip' in (item.name | lower)"
+  loop_control:
+    label: "{{ item.name }}"
+  register: selection_result
+
+- name: Extract chosen asset from loop results
+  set_fact:
+    selected_asset: >-
+      {{
+        (
+          selection_result.results
+          | selectattr('ansible_facts', 'defined')
+          | map(attribute='ansible_facts')
+          | map(attribute='selected_asset')
+          | list
+          | first
+        ) | default(None)
+      }}
+
+- name: Fail if no matching asset found
+  fail:
+    msg: >-
+      No linux-amd64 .zip asset found in latest release ({{ gh_latest.json.tag_name }}).
+      Assets: {{ gh_latest.json.assets | map(attribute='name') | list }}
+  when: selected_asset is none
+
+- name: Download release asset
+  get_url:
+    url: "{{ selected_asset.browser_download_url }}"
+    dest: "/tmp/{{ selected_asset.name }}"
+    mode: "0644"
+
+- name: Prepare extraction directory
+  file:
+    path: "/tmp/{{ binary_name }}-extract"
+    state: directory
+    mode: "0755"
+
+- name: Unzip asset
+  unarchive:
+    src: "/tmp/{{ selected_asset.name }}"
+    dest: "/tmp/{{ binary_name }}-extract"
+    remote_src: true
+
+- name: Locate binary inside extracted tree
+  find:
+    paths: "/tmp/{{ binary_name }}-extract"
+    patterns: "{{ binary_name }}"
+    file_type: file
+    recurse: true
+  register: bin_find
+
+- name: Fail if binary not found
+  fail:
+    msg: "Could not find '{{ binary_name }}' inside the extracted zip."
+  when: bin_find.files | length == 0
+
+- name: Install binary to /usr/local/bin
+  copy:
+    src: "{{ (bin_find.files | first).path }}"
+    dest: "/usr/local/bin/{{ installed_binary_name }}"
+    owner: root
+    group: root
+    mode: "0755"
+    remote_src: true
+
+# - name: Verify installation as vagrant
+#   become_user: vagrant
+#   command: "/usr/local/bin/{{ binary_name }} --version"
+#   register: ver
+#   changed_when: false
+
+# - debug:
+#     msg: "Installed {{ binary_name }} {{ ver.stdout | default('(no version output)') }} from {{ gh_latest.json.tag_name }}"

@@ -4,16 +4,23 @@
   vars:
     ansible_python_interpreter: /usr/bin/python3
     ansible_become: true
+    gh_owner: mikejw
+    gh_repo: bdcli
+    binary_name: bdcli_linux_amd64
+    installed_binary_name: bdcli
   gather_facts: false
   tasks:
     - name: virtualenv
       include_tasks: "{{ playbook_dir }}/vagrant_virtualenv.yml"
+    - name: install pip packaging
+      include_tasks: "{{ playbook_dir }}/vagrant_install_packaging.yml"
     - name: set hostname
       ansible.builtin.hostname:
         name: control
         use: systemd
-
-
+    - name: install bdcli
+      include_tasks: "{{ playbook_dir }}/vagrant_install_bdcli.yml"
+   
 - hosts: node
   vars:
     ansible_python_interpreter: /usr/bin/python3
@@ -24,6 +31,8 @@
   tasks:
     - name: virtualenv
       include_tasks: "{{ playbook_dir }}/vagrant_virtualenv.yml"
+    - name: install pip packaging
+      include_tasks: "{{ playbook_dir }}/vagrant_install_packaging.yml"     
     - name: set hostname
       ansible.builtin.hostname:
         name: node
@@ -54,6 +63,5 @@
         path: /etc/hosts
         regexp: '^127\.0\.1\.1\s+localhost'
         line: "127.0.1.1\tlocalhost\twww.dev.org cms.dev.org go.dev.org"
-
 
 ...

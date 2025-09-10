@@ -1,0 +1,19 @@
+
+- name: Ensure python3-venv and pip are installed (Debian/Ubuntu)
+  apt:
+    name:
+      - python3-venv
+      - python3-pip
+    state: present
+    update_cache: yes
+
+- name: Ensure virtualenv exists at {{ venv_path }}
+  command: "python3 -m venv {{ virtualenv_dir }}"
+  args:
+    creates: "{{ virtualenv_dir }}/bin/activate"
+
+- name: Install packaging into venv {{ venv_path }}
+  pip:
+    name: packaging
+    virtualenv: "{{ virtualenv_dir }}"
+    virtualenv_command: "python3 -m venv"
