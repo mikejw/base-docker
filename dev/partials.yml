@@ -5,7 +5,7 @@
     partial_text: "" 
 - name: set partial filename
   set_fact:
-    partial_file: "{{ playbook_dir }}/docker-compose.partial.yml"  
+    partial_file: "{{ compose_dir }}/docker-compose.partial.yml"  
 - name: remix
   block:
     - name: create env dir
@@ -19,14 +19,15 @@
   when: operation == "qs" and template == "elib-cms"    
 - name: detect services partial
   stat:
-    path: "{{ code_dir }}/{{ use_project }}/env/docker-partial.j2"
+    path: "{{ control_code_dir }}/{{ use_project }}/env/docker-partial.j2"
   register: st
+  delegate_to: control
 - name: output stat
   debug:
     var: st
 - name: populate docker-compose partial
   template:
-    src: "{{ code_dir }}/{{ use_project }}/env/docker-partial.j2"
+    src: "{{ control_code_dir }}/{{ use_project }}/env/docker-partial.j2"
     dest: "{{ partial_file }}"
   when: st.stat.exists == true
 

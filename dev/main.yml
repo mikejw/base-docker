@@ -25,6 +25,7 @@
     template: "{{ (tpl is defined) | ternary(tpl, 'vanilla') }}"
     composer_install_source: "{{ (use_developer) | ternary('--prefer-source', '') }}"
     compose_dir: "{{ (variable_host == 'node') | ternary('/home/vagrant/files', playbook_dir) }}"
+    control_code_dir: "{{ hostvars['control']['code_dir'] }}"
   gather_facts: no
   tasks:
     - name: install pip packages
