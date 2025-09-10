@@ -7,5 +7,5 @@ ansible_python_interpreter: "{{ virtualenv_dir }}/bin/python"
 settings_dir: ~/.config/base-docker
 settings_file: base-docker.ini
 project: "my_project"
-code_dir: "{{ playbook_dir }}/code"
+code_dir: "~/files/code"
 ...
