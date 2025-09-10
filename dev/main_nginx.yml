@@ -10,9 +10,28 @@
     dest: "{{ playbook_dir }}/env/vhost.d/{{ use_host }}_location"
     state: link
   when: use_host != 'www.dev.org' and not st.stat.exists and variable_host != 'node'
-- name: copy file when using 'node'
-  copy:
-    src: "{{ playbook_dir }}/env/vhost.d/www.dev.org_location"
-    dest: "{{ compose_dir }}/env/vhost.d/{{ use_host }}_location"
+
+- name: copy file
+  block:
+  - name: ensure env dir exists (and is writable by vagrant)
+    become: true
+    ansible.builtin.file:
+      path: "{{ compose_dir }}/env"
+      state: directory
+      owner: vagrant
+      group: vagrant
+      mode: "0775"
+  - name: ensure env/vhost.d dir exists (and is writable by vagrant)
+    become: true
+    ansible.builtin.file:
+      path: "{{ compose_dir }}/env/vhost.d"
+      state: directory
+      owner: vagrant
+      group: vagrant
+      mode: "0775"  
+  - name: copy file when using 'node'
+    copy:
+      src: "{{ playbook_dir }}/env/vhost.d/www.dev.org_location"
+      dest: "{{ compose_dir }}/env/vhost.d/{{ use_host }}_location"
   when: use_host != 'www.dev.org' and not st.stat.exists and variable_host == 'node'
 
