@@ -33,8 +33,8 @@
       apt:
         name: 
           - unzip
-    state: present
-    update_cache: yes
+        state: present
+        update_cache: yes
     - name: virtualenv
       include_tasks: "{{ playbook_dir }}/vagrant_virtualenv.yml"
     - name: install pip packaging
