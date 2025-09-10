@@ -2,6 +2,14 @@
 # Changelog
 
 
+## [2.0.2] - 2025-09-10
+
+### Fixed
+
+- Vagrant fixes, specicially for running on Windows
+- Ensure bdcli is installed to VirtualBox `control` VM
+
+
 ## [2.0.1] - 2025-07-10
 
 ### Fixed
