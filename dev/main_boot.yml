@@ -25,5 +25,7 @@
     project_src: "{{ compose_dir }}"
     state: present
     remove_orphans: true
+    env_files: 
+      - "{{ code_dir }}/{{ use_project }}/.env"
  
  
