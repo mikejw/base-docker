@@ -17,7 +17,7 @@
     saved_developer: "{{ lookup('ini', developer_ini) }}"
     saved_arch: "{{ lookup('ini', arch_ini) }}"
     saved_host: "{{ lookup('ini', host_ini) }}"
-    use_project: "{{ cb | default(saved_project) }}"
+    use_project: "{{ cb | default(saved_project, true) }}"
     use_arch: "{{ 'pi' if (arch_string | default('')) == 'pi' else '' }}"
     use_host: "{{ saved_host | default('www.dev.org') }}"
     use_developer: "{{ saved_developer | default(false) }}"
