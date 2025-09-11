@@ -20,12 +20,16 @@
         mode: "0775"
   when: variable_host == 'node'
 
+- name: check if env file exists
+  ansible.builtin.stat:
+    path: "{{ code_dir }}/{{ use_project }}/.env"
+  register: env_file
+
 - name: boot
   community.docker.docker_compose_v2:
     project_src: "{{ compose_dir }}"
     state: present
     remove_orphans: true
-    env_files: 
-      - "{{ code_dir }}/{{ use_project }}/.env"
+    env_files: "{{ env_file.stat.exists | ternary([code_dir ~ '/' ~ use_project ~ '/.env'], omit) }}"
  
  
