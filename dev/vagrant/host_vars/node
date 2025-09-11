@@ -11,4 +11,5 @@ settings_file: base-docker.ini
 virtualenv_dir: "/home/vagrant/python"
 ansible_python_interpreter: "{{ virtualenv_dir }}/bin/python"
 url: ""
+cb: ""
 ...
