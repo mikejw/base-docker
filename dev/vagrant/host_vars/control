@@ -8,5 +8,4 @@ settings_dir: ~/.config/base-docker
 settings_file: base-docker.ini
 project: "my_project"
 code_dir: "~/files/code"
-cb: ""
 ...
