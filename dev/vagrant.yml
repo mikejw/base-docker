@@ -1,14 +1,5 @@
 ---
 
-
-# ssh \
-#   -i /home/vagrant/.ssh/vagrant_insecure_key \
-#   -o StrictHostKeyChecking=no \
-#   -o UserKnownHostsFile=/dev/null \
-#   -o LogLevel=ERROR \
-#   vagrant@node -C "ls"
-
-
 - hosts: control
   vars:
     ansible_python_interpreter: /usr/bin/python3
@@ -49,13 +40,17 @@
       ansible.builtin.include_tasks: "{{ playbook_dir }}/vagrant_hosts_entry.yml"
       vars:
         target: node
-        names:
-          - node
+        names: "{{ node_hosts }}"
    
 - hosts: node
   vars:
     ansible_python_interpreter: /usr/bin/python3
     ansible_become: true
+    node_hosts:
+      - www.dev.org
+      - cms.dev.org
+      - go.dev.org
+      - node
   gather_facts: yes
   roles:
     - geerlingguy.docker
@@ -101,12 +96,7 @@
       ansible.builtin.include_tasks: "{{ playbook_dir }}/vagrant_hosts_entry.yml"
       vars:
         ip: 127.0.0.1
-        names:
-          - node
-          - www.dev.org
-          - cms.dev.org
-          - go.dev.org
-          - localhost
+        names: "{{ node_hosts }}"
 
     # 2) control machine line, IP derived from host "control"
     - name: add control host entry (dynamic IP)
