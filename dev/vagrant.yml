@@ -1,5 +1,14 @@
 ---
 
+
+# ssh \
+#   -i /home/vagrant/.ssh/vagrant_insecure_key \
+#   -o StrictHostKeyChecking=no \
+#   -o UserKnownHostsFile=/dev/null \
+#   -o LogLevel=ERROR \
+#   vagrant@node -C "ls"
+
+
 - hosts: control
   vars:
     ansible_python_interpreter: /usr/bin/python3
@@ -8,7 +17,12 @@
     gh_repo: bdcli
     binary_name: bdcli_linux_amd64
     installed_binary_name: bdcli
-  gather_facts: false
+    node_hosts:
+      - www.dev.org
+      - cms.dev.org
+      - go.dev.org
+      - node
+  gather_facts: yes
   tasks:
     - name: virtualenv
       include_tasks: "{{ playbook_dir }}/vagrant_virtualenv.yml"
@@ -20,6 +34,23 @@
         use: systemd
     - name: install bdcli
       include_tasks: "{{ playbook_dir }}/vagrant_install_bdcli.yml"
+    
+    # 1) "control" line 
+    - name: add control
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/vagrant_hosts_entry.yml"
+      vars:
+        ip: 127.0.0.1
+        names:
+          - control
+          - localhost
+
+    # 2) node machine line, IP derived from host "node"
+    - name: add node host entry (dynamic IP)
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/vagrant_hosts_entry.yml"
+      vars:
+        target: node
+        names:
+          - node
    
 - hosts: node
   vars:
@@ -64,10 +95,26 @@
       ansible.builtin.apt:
         name: virtualenv
         state: present
-    - name: ensure www.dev.org points to node
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        regexp: '^127\.0\.1\.1\s+localhost'
-        line: "127.0.1.1\tlocalhost\twww.dev.org cms.dev.org go.dev.org"
+
+    # 1) "node" line with dev aliases 
+    - name: add node + dev aliases
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/vagrant_hosts_entry.yml"
+      vars:
+        ip: 127.0.0.1
+        names:
+          - node
+          - www.dev.org
+          - cms.dev.org
+          - go.dev.org
+          - localhost
+
+    # 2) control machine line, IP derived from host "control"
+    - name: add control host entry (dynamic IP)
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/vagrant_hosts_entry.yml"
+      vars:
+        target: control
+        names:
+          - control
+          
 
 ...

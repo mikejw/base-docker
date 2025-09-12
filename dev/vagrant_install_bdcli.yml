@@ -54,6 +54,7 @@
     url: "{{ selected_asset.browser_download_url }}"
     dest: "/tmp/{{ selected_asset.name }}"
     mode: "0644"
+    force: true
 
 - name: Prepare extraction directory
   file:
