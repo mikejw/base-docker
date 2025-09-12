@@ -2,6 +2,14 @@
 # Changelog
 
 
+## [2.0.4] - 2025-09-12
+
+### Fixed
+
+- Ensure VMs have correct hosts file entries
+- Always get latest `bdcli` on provision
+
+
 ## [2.0.3] - 2025-09-10
 
 ### Fixed
