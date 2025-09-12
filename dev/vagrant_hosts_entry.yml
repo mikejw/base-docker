@@ -1,0 +1,57 @@
+
+# vars expected:
+# - names: [primary_name, alias1, ...]   (required)
+# - ip: explicit IP                      (optional)
+# - target: hostname to derive IP from   (optional, used only if ip is absent)
+
+- name: assert we have at least one name
+  ansible.builtin.assert:
+    that:
+      - names is defined
+      - names | length > 0
+
+# If caller didn't pass ip, gather facts on the target so we can derive one.
+- name: gather facts on target (so hostvars[target].ansible_default_ipv4 exists)
+  ansible.builtin.setup:
+  delegate_to: "{{ target | default(omit) }}"
+  delegate_facts: true
+  when:
+    - ip is not defined
+    - target is defined
+
+# Derive IP robustly (ansible_host -> default_ipv4.address -> first all_ipv4 -> fail)
+- name: derive ip from target if not provided
+  ansible.builtin.set_fact:
+    ip: >-
+      {{
+        hostvars[target].ansible_host
+          | default(hostvars[target].get('ansible_default_ipv4', {}).get('address'))
+          | default((hostvars[target].get('ansible_all_ipv4_addresses', []) | first))
+      }}
+  when:
+    - ip is not defined
+    - target is defined
+
+- name: assert ip is known
+  ansible.builtin.assert:
+    that: ip is defined and ip | length > 0
+    fail_msg: "IP not provided and could not be derived from 'target'."
+
+- name: build final hosts line
+  ansible.builtin.set_fact:
+    hosts_line: "{{ ip }} {{ names | join(' ') }}"
+
+- name: remove stale line for primary alias
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    state: absent
+    regexp: '^\s*\S+\s+.*\b{{ names[0] | regex_escape }}\b.*$'
+  become: yes
+
+- name: ensure hosts entry present
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^\s*{{ ip | regex_escape }}\s+'
+    line: "{{ hosts_line }}"
+    state: present
+  become: yes
