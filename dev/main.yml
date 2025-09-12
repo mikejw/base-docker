@@ -17,13 +17,15 @@
     saved_developer: "{{ lookup('ini', developer_ini) }}"
     saved_arch: "{{ lookup('ini', arch_ini) }}"
     saved_host: "{{ lookup('ini', host_ini) }}"
-    use_project: "{{ (cb is defined) | ternary(cb, saved_project) }}"
-    use_arch: "{{ (saved_arch == 'pi') | ternary('pi', '') }}"
-    use_host: "{{ (saved_host != '') | ternary(saved_host, 'www.dev.org') }}"
-    use_developer: "{{ (saved_developer) | ternary(saved_developer, false) }}"
-    operation: "{{ (op is defined) | ternary(op, 'none') }}"
-    template: "{{ (tpl is defined) | ternary(tpl, 'vanilla') }}"
+    use_project: "{{ cb | default(saved_project, true) }}"
+    use_arch: "{{ 'pi' if (arch_string | default('')) == 'pi' else '' }}"
+    use_host: "{{ saved_host | default('www.dev.org') }}"
+    use_developer: "{{ saved_developer | default(false) }}"
+    operation: "{{ op | default('none') }}"
+    template: "{{ tpl | default('vanilla') }}"
     composer_install_source: "{{ (use_developer) | ternary('--prefer-source', '') }}"
+    compose_dir: "{{ '/home/vagrant/files' if (variable_host | default('')) == 'node' else playbook_dir }}"
+    control_code_dir: "{{ hostvars['control']['code_dir'] }}"
   gather_facts: no
   tasks:
     - name: install pip packages
@@ -45,16 +47,11 @@
         - name: populate docker-compose
           template:
             src: "{{ playbook_dir }}/env/docker-compose.j2"
-            dest: "{{ playbook_dir }}/docker-compose.yml"
+            dest: "{{ compose_dir }}/docker-compose.yml"
         - name: logging
           include_tasks: "{{ playbook_dir }}/main_logging.yml"
         - name: boot containers
-          community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
-            state: present
-            remove_orphans: true
-            env_files: 
-              - "{{ code_dir }}/{{ use_project }}/.env"
+          include_tasks: "{{ playbook_dir }}/main_boot.yml"
         # is below possible when
         # potentially an open docker port is
         # being detected?
@@ -95,7 +92,7 @@
           when: hasRemix.stdout | int == 1
         - name: restart remix
           community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
+            project_src: "{{ compose_dir }}"
             services:
               - remix
             recreate: always
@@ -131,19 +128,16 @@
         - name: populate docker-compose
           template:
             src: "{{ playbook_dir }}/env/docker-compose.j2"
-            dest: "{{ playbook_dir }}/docker-compose.yml"
+            dest: "{{ compose_dir }}/docker-compose.yml"
         - name: logging
           include_tasks: "{{ playbook_dir }}/main_logging.yml"
         - name: create server directory
           file:
             path: "{{ code_dir }}/{{ use_project }}/react/server"
             state: directory
-          when: template == 'elib-cms'  
+          when: template == 'elib-cms'
         - name: boot containers
-          community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
-            state: present
-            remove_orphans: true
+          include_tasks: "{{ playbook_dir }}/main_boot.yml"
         - name: install
           include_tasks: "{{ playbook_dir }}/main_install.yml"
         - name: configure
@@ -393,7 +387,7 @@
           command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql populate"
         - name: restart remix
           community.docker.docker_compose_v2:
-            project_src: "{{ playbook_dir }}"
+            project_src: "{{ compose_dir }}"
             services:
               - remix
             recreate: always

@@ -29,6 +29,12 @@
   roles:
     - geerlingguy.docker
   tasks:
+    - name: Ensure unzip is installed (Debian/Ubuntu)
+      apt:
+        name: 
+          - unzip
+        state: present
+        update_cache: yes
     - name: virtualenv
       include_tasks: "{{ playbook_dir }}/vagrant_virtualenv.yml"
     - name: install pip packaging

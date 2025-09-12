@@ -2,6 +2,25 @@
 # Changelog
 
 
+## [2.0.3] - 2025-09-10
+
+### Fixed
+
+- Ensure file sync mount on `control` VM
+- Use correct remote compose dir on `node` VM
+- Use correct locations for partials templating
+- Install unzip to `node` VM
+- More misc Vagrant fixes
+
+
+## [2.0.2] - 2025-09-10
+
+### Fixed
+
+- Vagrant fixes, specicially for running on Windows
+- Ensure bdcli is installed to VirtualBox `control` VM
+
+
 ## [2.0.1] - 2025-07-10
 
 ### Fixed
