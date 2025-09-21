@@ -22,6 +22,8 @@
 
 - hosts: test
   gather_facts: true
+  vars:
+    use_arch: "{{ 'pi' if ansible_architecture == 'aarch64' else '' }}"
   vars_files:
     - ~/.config/base-docker/settings.yml    
   tasks:

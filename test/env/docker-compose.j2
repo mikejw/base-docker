@@ -11,7 +11,7 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/home/{{ ansible_user }}/jenkins:/var/jenkins_home"
-    image: "registry.gitlab.com/mikejw/empathy/jenkins-gig:jdk17"
+    image: "registry.gitlab.com/mikejw/empathy/jenkins-gig:{% if use_arch == 'pi' %}jdk17-arm64{% else %}jdk17{% endif +%}"
     container_name: "jenkins-jenkins"
     networks:
       - nginx-proxy
