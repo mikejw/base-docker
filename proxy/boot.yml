@@ -45,6 +45,9 @@
       ansible.builtin.shell:
         cmd: . ./caddy.sh
         chdir: /root
+    - name: gen http pass
+      ansible.builtin.command: "caddy hash-password -p {{ secrets_vals.test_http_pass }}"
+      register: http_pass
     - name: insert Caddyfile
       template:
         src: "{{ playbook_dir }}/env/Caddyfile.j2"
@@ -58,8 +61,8 @@
     - name: custom caddy
       ansible.builtin.shell:
         cmd: . ./caddy_custom.sh
-        chdir: /root    
-           
+        chdir: /root
+
        
 - hosts: control
   gather_facts: false

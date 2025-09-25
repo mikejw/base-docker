@@ -9,6 +9,9 @@
 }
 
 *.staging.{{ hosts.proxy_domain }} {
+  basic_auth {
+    {{ secrets_vals.test_http_user }} {{ http_pass.stdout }}
+  }
   reverse_proxy http://{{ hosts.test_ts_ip }}:80
   import cloudflare
 }
