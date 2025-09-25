@@ -1,0 +1,100 @@
+
+# useful if geerlingguy.docker gets into weird state
+
+- hosts: test
+  become: true
+  gather_facts: false
+
+  vars:
+    purge_docker_group: false
+
+  tasks:
+    # 1) find any apt source that references Docker (list or Deb822 or even stray lines)
+    - name: find apt files that reference docker
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep -R -l 'download\.docker\.com' /etc/apt 2>/dev/null || true
+      args:
+        executable: /bin/bash
+      register: docker_source_files
+      changed_when: false
+
+    - name: show docker apt files found
+      ansible.builtin.debug:
+        var: docker_source_files.stdout_lines
+
+    # 2) remove .list/.sources files that reference Docker
+    - name: remove apt source files that reference docker
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ docker_source_files.stdout_lines | reject('equalto', '/etc/apt/sources.list') | list }}"
+      when: docker_source_files.stdout_lines | length > 0
+
+    # 3) strip any docker lines from /etc/apt/sources.list (if present)
+    - name: remove docker lines from /etc/apt/sources.list
+      ansible.builtin.replace:
+        path: /etc/apt/sources.list
+        regexp: '.*download\.docker\.com.*\n?'
+        replace: ''
+      when: docker_source_files.stdout_lines is search('/etc/apt/sources.list')
+
+    # 4) purge docker packages WITHOUT using apt (avoid parsing sources)
+    - name: list installed docker/containerd/runc packages
+      ansible.builtin.shell: |
+        dpkg -l | awk '/^(ii|rc)\s+(docker|containerd|runc)/{print $2}'
+      register: docker_pkgs
+      changed_when: false
+
+    - name: purge docker packages with dpkg (no apt used)
+      ansible.builtin.shell: |
+        set -e
+        dpkg -P {{ docker_pkgs.stdout_lines | join(' ') }}
+      when: docker_pkgs.stdout_lines | length > 0
+
+    # 5) best-effort stop services & remove data/config
+    - name: stop docker services (best-effort)
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: false
+      loop:
+        - docker
+        - containerd
+      ignore_errors: true
+
+    - name: remove docker data and config
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /var/lib/docker
+        - /var/lib/containerd
+        - /etc/docker
+      ignore_errors: true
+
+    - name: remove docker group (optional)
+      ansible.builtin.group:
+        name: docker
+        state: absent
+      when: purge_docker_group | bool
+
+    # 6) remove both possible apt key locations
+    - name: remove docker apt keys
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/apt/keyrings/docker.asc
+        - /etc/apt/trusted.gpg.d/docker.asc
+      ignore_errors: true
+
+    # 7) prove no docker sources remain
+    - name: sanity check - grep for docker in /etc/apt
+      ansible.builtin.shell: "grep -R 'download.docker.com' -n /etc/apt || true"
+      register: docker_repo_scan
+      changed_when: false
+
+    - name: show sanity check
+      ansible.builtin.debug:
+        msg: "{{ docker_repo_scan.stdout | default('no docker repo found') }}"
