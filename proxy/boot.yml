@@ -48,6 +48,11 @@
     - name: gen http pass
       ansible.builtin.command: "caddy hash-password -p {{ secrets_vals.test_http_pass }}"
       register: http_pass
+      when:
+        - secrets_vals.test_http_user is defined
+        - secrets_vals.test_http_user | length > 0
+        - secrets_vals.test_http_pass is defined
+        - secrets_vals.test_http_pass | length > 0
     - name: insert Caddyfile
       template:
         src: "{{ playbook_dir }}/env/Caddyfile.j2"

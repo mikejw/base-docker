@@ -77,7 +77,9 @@
 - hosts: test
   gather_facts: false
   vars_files:
-    - ~/.config/base-docker/settings.yml    
+    - ~/.config/base-docker/settings.yml
+  vars:
+    use_arch: "{{ 'pi' if ansible_architecture == 'aarch64' else '' }}"   
   tasks:
     - name: pull docker images
       community.docker.docker_image:
@@ -85,7 +87,7 @@
         source: pull
         pull:
       loop:
-        - registry.gitlab.com/mikejw/empathy/jenkins-gig:{{ 'jdk17-arm64' if use_arth == 'pi' else 'jdk17' }}"
+        - "registry.gitlab.com/mikejw/empathy/jenkins-gig:{{ 'jdk17-arm64' if use_arch == 'pi' else 'jdk17' }}"
         - tailscale/tailscale:latest
         - jwilder/nginx-proxy  
 
