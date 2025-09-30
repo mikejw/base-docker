@@ -15,7 +15,7 @@ services:
 {% if use_arch != 'pi' %}
     platform: linux/x86_64
 {% endif %}
-    image: registry.gitlab.com/mikejw/empathy/app-php-dev-wnode:{% if use_arch == 'pi' %}php84-arm64{% else %}php84{% endif +%}
+    image: registry.gitlab.com/mikejw/empathy/franken-dev-wnode:{% if use_arch == 'pi' %}arm64{% else %}latest{% endif +%}
     environment:
       - VIRTUAL_HOST={{ use_host }}
       - VIRTUAL_PORT=80

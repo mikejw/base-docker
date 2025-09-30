@@ -5,7 +5,11 @@
     partial_text: "" 
 - name: set partial filename
   set_fact:
-    partial_file: "{{ compose_dir }}/docker-compose.partial.yml"  
+    partial_file: "{{ compose_dir }}/docker-compose.partial.yml" 
+- name: remove old file
+  ansible.builtin.file:
+    path: "{{ partial_file }}"
+    state: absent     
 - name: remix
   block:
     - name: create env dir
