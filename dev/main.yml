@@ -39,10 +39,10 @@
       block:
         - name: nginx config
           include_tasks: "{{ playbook_dir }}/main_nginx.yml"
-        - name: stop containers
-          include_tasks: "{{ playbook_dir }}/main_stop.yml"
         - name: partials
           include_tasks: "{{ playbook_dir }}/partials.yml"
+        - name: stop containers
+          include_tasks: "{{ playbook_dir }}/main_stop.yml"  
         - name: populate docker-compose
           template:
             src: "{{ playbook_dir }}/env/docker-compose.j2"
@@ -95,6 +95,7 @@
             services:
               - remix
             recreate: always
+            files: "{{ compose_files }}"
           when: hasRemix.stdout | int == 1  
       when: operation == "boot"
     - name: switch
@@ -390,6 +391,7 @@
             services:
               - remix
             recreate: always
+            files: "{{ compose_files }}"
       when: operation == "qs" and template == "elib-cms"
     - name: qs elib-blog template
       block:

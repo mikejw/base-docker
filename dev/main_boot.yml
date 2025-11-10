@@ -31,5 +31,6 @@
     state: present
     remove_orphans: true
     env_files: "{{ env_file.stat.exists | ternary([code_dir ~ '/' ~ use_project ~ '/.env'], omit) }}"
+    files: "{{ compose_files }}"
  
  

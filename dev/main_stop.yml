@@ -8,4 +8,5 @@
   community.docker.docker_compose_v2:
     project_src: "{{ playbook_dir }}"
     state: absent
+    files: "{{ compose_files }}"
   when: st.stat.exists
