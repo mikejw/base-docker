@@ -58,7 +58,7 @@
 - name: add override file to compose_files when enabled
   when: partial_stat.stat.exists
   set_fact:
-    compose_files: "{{ compose_files + ['{{ partial }}'] }}"  
+    compose_files: "{{ compose_files + [ partial ] }}"
 
 # - name: read partial from remote
 #   ansible.builtin.slurp:

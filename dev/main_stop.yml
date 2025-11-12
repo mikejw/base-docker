@@ -1,12 +1,37 @@
 
 
+- name: init compose file vars
+  set_fact:
+    partial: "docker-compose.partial.yml"
+
+- name: init compose file vars
+  set_fact:
+    compose_files: []
+    partial_file: "{{ compose_dir }}/{{ partial }}"
+
 - name: detect docker compose file
   stat:
     path: "{{ playbook_dir }}/docker-compose.yml"
-  register: st 
+  register: base_stat
+
+- name: add base compose file if present
+  set_fact:
+    compose_files: "{{ compose_files + ['docker-compose.yml'] }}"
+  when: base_stat.stat.exists
+
+- name: detect docker compose partial
+  stat:
+    path: "{{ partial_file }}"
+  register: partial_stat
+
+- name: add partial file if present
+  set_fact:
+    compose_files: "{{ compose_files + [ partial ] }}"
+  when: partial_stat.stat.exists
+
 - name: stop any existing containers
   community.docker.docker_compose_v2:
     project_src: "{{ playbook_dir }}"
     state: absent
     files: "{{ compose_files }}"
-  when: st.stat.exists
+  when: compose_files | length > 0

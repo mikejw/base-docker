@@ -39,10 +39,10 @@
       block:
         - name: nginx config
           include_tasks: "{{ playbook_dir }}/main_nginx.yml"
-        - name: partials
-          include_tasks: "{{ playbook_dir }}/partials.yml"
         - name: stop containers
           include_tasks: "{{ playbook_dir }}/main_stop.yml"  
+        - name: partials
+          include_tasks: "{{ playbook_dir }}/partials.yml"
         - name: populate docker-compose
           template:
             src: "{{ playbook_dir }}/env/docker-compose.j2"
@@ -122,15 +122,29 @@
             src: "{{ playbook_dir }}/env/templates/vanilla/composer.j2"
             dest: "{{ code_dir }}/{{ use_project }}/composer.json"
         - name: stop containers
-          include_tasks: "{{ playbook_dir }}/main_stop.yml" 
+          include_tasks: "{{ playbook_dir }}/main_stop.yml"     
         - name: partials
-          include_tasks: "{{ playbook_dir }}/partials.yml" 
+          include_tasks: "{{ playbook_dir }}/partials.yml"
         - name: populate docker-compose
           template:
             src: "{{ playbook_dir }}/env/docker-compose.j2"
             dest: "{{ compose_dir }}/docker-compose.yml"
         - name: logging
           include_tasks: "{{ playbook_dir }}/main_logging.yml"
+        - name: create env directory
+          file:
+            path: "{{ code_dir }}/{{ use_project }}/env"
+            state: directory  
+        - name: populate caddyfile
+          template:
+            src: "{{ playbook_dir }}/env/templates/vanilla/env/Caddyfile.j2"
+            dest: "{{ code_dir }}/{{ use_project }}/env/Caddyfile"
+        - name: populate caddyfile
+          template:
+            src: "{{ playbook_dir }}/env/templates/elib-blog/env/Caddyfile.j2"
+            dest: "{{ code_dir }}/{{ use_project }}/env/Caddyfile"
+          when: operation == "qs" and template == "elib-blog"  
+    
         - name: create server directory
           file:
             path: "{{ code_dir }}/{{ use_project }}/react/server"

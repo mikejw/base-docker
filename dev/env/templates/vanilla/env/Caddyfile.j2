@@ -1,0 +1,38 @@
+
+{
+  auto_https off
+}
+
+:80 {
+    root * /var/www/project/public_html
+
+    @notFile {
+  	    not file
+    }
+
+    rewrite @notFile /index.php
+
+    # Compression (on-the-fly) + serve precompressed if you ship .br/.gz
+    encode zstd gzip
+    file_server {
+        precompressed br gzip
+    }
+
+    # Cache static assets aggressively
+    @assets path_regexp assets \.(?:css|js|png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf|eot)$
+    header @assets Cache-Control "public_html, max-age=31536000, immutable"
+
+    # Basic security headers
+    header {
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # add more as needed
+    }
+
+    # Health check endpoint (no PHP)
+    @health path /healthz
+    respond @health 200
+
+    # Hand off to PHP
+    php_server
+}
