@@ -3,6 +3,16 @@
 # "qs" = shortened for quick starts
 ---
 
+- hosts: control
+  vars:
+    host_ini: "host section=Settings file={{ settings_dir }}/{{ settings_file }}"
+    saved_host: "{{ lookup('ini', host_ini) }}"
+    use_host: "{{ saved_host | default('www.dev.org') }}"
+  gather_facts: yes
+  tasks:
+    - name: nginx config
+      include_tasks: "{{ playbook_dir }}/main_nginx.yml"
+
 
 - hosts: "{{ variable_host | default('control') }}"
   vars:
@@ -37,8 +47,6 @@
       when: operation == "none"
     - name: boot
       block:
-        - name: nginx config
-          include_tasks: "{{ playbook_dir }}/main_nginx.yml"
         - name: stop containers
           include_tasks: "{{ playbook_dir }}/main_stop.yml"  
         - name: partials
