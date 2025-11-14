@@ -11,7 +11,7 @@
 
 - name: detect docker compose file
   stat:
-    path: "{{ playbook_dir }}/docker-compose.yml"
+    path: "{{ compose_dir }}/docker-compose.yml"
   register: base_stat
 
 - name: add base compose file if present
@@ -31,7 +31,7 @@
 
 - name: stop any existing containers
   community.docker.docker_compose_v2:
-    project_src: "{{ playbook_dir }}"
+    project_src: "{{ compose_dir }}"
     state: absent
     files: "{{ compose_files }}"
   when: compose_files | length > 0
