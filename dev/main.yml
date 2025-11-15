@@ -1,20 +1,6 @@
-
 # "cb" = shortened for codebase
 # "qs" = shortened for quick starts
 ---
-
-- hosts: "{{ variable_host | default('control') }}"
-  vars:
-    host_ini: "host section=Settings file={{ settings_dir }}/{{ settings_file }}"
-    saved_host: "{{ lookup('ini', host_ini) }}"
-    use_host: "{{ saved_host | default('www.dev.org') }}"
-    compose_dir: "{{ '/home/vagrant/files' if (variable_host | default('')) == 'node' else playbook_dir }}"
-  gather_facts: yes
-  tasks:
-    - name: nginx config
-      include_tasks: "{{ playbook_dir }}/main_nginx.yml"
-
-
 - hosts: "{{ variable_host | default('control') }}"
   vars:
     env: "development"
@@ -48,6 +34,8 @@
       when: operation == "none"
     - name: boot
       block:
+        - name: nginx config
+          include_tasks: "{{ playbook_dir }}/main_nginx.yml"
         - name: stop containers
           include_tasks: "{{ playbook_dir }}/main_stop.yml"  
         - name: partials
@@ -114,6 +102,8 @@
       when: operation == "switch"
     - name: qs
       block:
+        - name: nginx config
+          include_tasks: "{{ playbook_dir }}/main_nginx.yml"
         - name: detect dir name
           stat:
             path: "{{ code_dir }}/{{ use_project }}"
@@ -170,8 +160,6 @@
       when: operation == "qs"
     - name: qs elib-base template
       block:
-        - name: nginx config
-          include_tasks: "{{ playbook_dir }}/main_nginx.yml"
         - name: populate elib.yml
           template:
             src: "{{ playbook_dir }}/env/templates/elib-base/elib.j2"
