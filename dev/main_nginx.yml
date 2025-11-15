@@ -1,5 +1,11 @@
 
 
+- name: assert vhost.d directory exists
+  ansible.builtin.file:
+    path: "{{ compose_dir }}/env/vhost.d"
+    state: directory
+    mode: '0755'
+
 - name: detect nginx config
   stat:
     path: "{{ compose_dir }}/env/vhost.d/{{ use_host }}_location"
