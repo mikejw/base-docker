@@ -36,7 +36,7 @@
         </exec>
     </target>
 
-    <target description="Run grunt task runner" name="grunt">
+    <target description="Run grunt task runner" name="grunt" depends="npm">
         <exec executable="./node_modules/grunt-cli/bin/grunt" />
     </target>
 
