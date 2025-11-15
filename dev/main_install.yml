@@ -32,7 +32,7 @@
     path: "{{ code_dir }}/{{ use_project }}/node_modules"
     state: absent
 - name: npm install
-  shell: docker exec -i -u www-data app npm install --no-bin-links
+  shell: docker exec -i -u www-data app npm install --bin-links=false
 - name: grunt
   shell: docker exec -i -u www-data app make grunt
   when: operation == "qs"

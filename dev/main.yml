@@ -79,13 +79,29 @@
           when: stsetup.stat.exists and stdump.stat.exists
         - name: populate db (setup)
           command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql setup"
-          when: stsetup.stat.exists and not stdump.stat.exists 
+          when: stsetup.stat.exists and not stdump.stat.exists
+
+
+        # always do full build
+        - name: remove node_modules directories
+          ansible.builtin.file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - "{{ code_dir }}/{{ use_project }}/node_modules"
+            - "{{ code_dir }}/{{ use_project }}/react/node_modules"
+            - "{{ code_dir }}/{{ use_project }}/react/server/node_modules"
+          when: (variable_host | default('')) == 'node'  
+        - name: build fe
+          shell: docker exec -i -u www-data app ant
+
         - name: check if build file contains remix
           shell: docker exec -i -u www-data app ant -p | grep remix | wc -l | awk '{ print $1 }'
           register: hasRemix 
-        - name: build react
-          shell: docker exec -i -u www-data app ant remix  
-          when: hasRemix.stdout | int == 1
+        # - name: build react
+        #   shell: docker exec -i -u www-data app ant remix  
+        #   when: hasRemix.stdout | int == 1
+
         - name: restart remix
           community.docker.docker_compose_v2:
             project_src: "{{ compose_dir }}"
