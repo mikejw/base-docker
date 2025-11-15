@@ -6,6 +6,7 @@
     ansible_become: true
     gh_owner: mikejw
     gh_repo: bdcli
+    gh_use_prerelease: true
     binary_name: bdcli_linux_amd64
     installed_binary_name: bdcli
     node_hosts:
