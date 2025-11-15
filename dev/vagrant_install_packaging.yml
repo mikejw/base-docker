@@ -7,12 +7,12 @@
     state: present
     update_cache: yes
 
-- name: Ensure virtualenv exists at {{ venv_path }}
+- name: Ensure virtualenv exists at {{ virtualenv_dir }}
   command: "python3 -m venv {{ virtualenv_dir }}"
   args:
     creates: "{{ virtualenv_dir }}/bin/activate"
 
-- name: Install packaging into venv {{ venv_path }}
+- name: Install packaging into venv {{ virtualenv_dir }}
   pip:
     name: packaging
     virtualenv: "{{ virtualenv_dir }}"
