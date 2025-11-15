@@ -40,15 +40,14 @@
         <exec executable="./node_modules/grunt-cli/bin/grunt" />
     </target>
 
-    <target description="prepare remix server" name="remix">
+    <target description="prepare remix server" name="remix" depends="npm-tmp-config">
         <delete dir="react/server/build"/>
         <delete dir="react/server/public"/>
         <delete dir="react/server/node_modules"/>
         <delete file="react/server/package-lock.json"/>
         <delete file="react/server/server.js"/>
 
-
-        <exec dir="react" executable="npm" depends="npm-tmp-config">
+        <exec dir="react" executable="npm">
             <arg value="install"/>
             <arg value="--bin-links=false" />
             <env key="TMPDIR" value="/tmp/npm-tmp"/>
