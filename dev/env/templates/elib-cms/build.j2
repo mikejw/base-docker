@@ -17,9 +17,22 @@
         </exec>
     </target>
 
-    <target description="Install dependencies with npm" name="npm">
+     <target name="npm-tmp-config">
+        <mkdir dir="/tmp/npm-tmp"/>
+        <chmod dir="/tmp/npm-tmp"
+            perm="777"
+            includes="**/*"
+            type="both"
+            failonerror="false"/>
+    </target>
+
+    <target description="Install dependencies with npm" name="npm" depends="npm-tmp-config">
         <exec executable="npm">
             <arg value="install" />
+            <arg value="--bin-links=false" />
+            <env key="TMPDIR" value="/tmp/npm-tmp"/>
+            <env key="TMP"    value="/tmp/npm-tmp"/>
+            <env key="TEMP"   value="/tmp/npm-tmp"/>
         </exec>
     </target>
 
@@ -34,13 +47,21 @@
         <delete file="react/server/package-lock.json"/>
         <delete file="react/server/server.js"/>
 
-        <exec dir="react" executable="npm">
+
+        <exec dir="react" executable="npm" depends="npm-tmp-config">
             <arg value="install"/>
+            <arg value="--bin-links=false" />
+            <env key="TMPDIR" value="/tmp/npm-tmp"/>
+            <env key="TMP"    value="/tmp/npm-tmp"/>
+            <env key="TEMP"   value="/tmp/npm-tmp"/>
         </exec>
 
         <exec dir="react" executable="npm">
             <arg value="run"/>
             <arg value="build"/>
+            <env key="TMPDIR" value="/tmp/npm-tmp"/>
+            <env key="TMP"    value="/tmp/npm-tmp"/>
+            <env key="TEMP"   value="/tmp/npm-tmp"/>
         </exec>
 
         <copy todir="react/server/build">
