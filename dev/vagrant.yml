@@ -16,6 +16,8 @@
       - node
   gather_facts: yes
   tasks:
+    - name: use fish
+      include_tasks: "{{ playbook_dir }}/vagrant_fish.yml"
     - name: virtualenv
       include_tasks: "{{ playbook_dir }}/vagrant_virtualenv.yml"
     - name: install pip packaging
@@ -62,6 +64,8 @@
           - unzip
         state: present
         update_cache: yes
+    - name: use fish
+      include_tasks: "{{ playbook_dir }}/vagrant_fish.yml"    
     - name: virtualenv
       include_tasks: "{{ playbook_dir }}/vagrant_virtualenv.yml"
     - name: install pip packaging

@@ -1,0 +1,44 @@
+
+- name: Ensure fish is installed (Debian/Ubuntu)
+  apt:
+    name: 
+      - fish
+    state: present
+    update_cache: yes
+- name: find fish binary path
+  command: which fish
+  register: fish_path
+  changed_when: false
+- name: ensure fish is in /etc/shells
+  lineinfile:
+    path: /etc/shells
+    line: "{{ fish_path.stdout }}"
+    state: present    
+- name: set default shell for ansible user
+  user:
+    name: "{{ ansible_user }}"
+    shell: "{{ fish_path.stdout }}"
+
+- name: ensure fish data dir exists and is writable
+  file:
+    path: "/home/{{ ansible_user }}/.local/share/fish"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: ensure fish history file exists and is writable
+  file:
+    path: "/home/{{ ansible_user }}/.local/share/fish/fish_history"
+    state: touch
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+
+- name: ensure fish config dir exists and is writable
+  file:
+    path: "/home/{{ ansible_user }}/.config/fish"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
