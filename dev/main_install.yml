@@ -23,9 +23,19 @@
     echo: true
   when: operation == "qs"
 - name: add bootstrap theming
-  copy:
-    src: "{{ playbook_dir }}/env/templates/elib-blog/public_html/css/scss/_variables.scss"
-    dest: "{{ code_dir }}/{{ use_project }}/public_html/css/scss/_variables.scss"
+  block:
+    - name: copy variables file  
+      copy:
+       src: "{{ playbook_dir }}/env/templates/elib-blog/public_html/css/scss/_variables.scss.j2"
+       dest: "{{ code_dir }}/{{ use_project }}/public_html/css/scss/_variables.scss"
+    - name: append blog.scss.j2 to end of style.scss
+      ansible.builtin.blockinfile:
+        path: "{{ code_dir }}/{{ use_project }}/public_html/css/scss/style.scss"
+        block: "{{ lookup('file', playbook_dir ~ '/env/templates/elib-blog/public_html/css/scss/blog.scss.j2') }}"
+        insertafter: EOF
+        marker: "/* {mark} ANSIBLE MANAGED BLOCK blog.scss.j2 */"
+      delegate_to: localhost
+      run_once: true     
   when: operation == "qs" and template == "elib-blog"
 - name: clear node_modules
   file:

@@ -465,10 +465,12 @@
           copy:
             src: "{{ playbook_dir }}/env/templates/elib-blog/public_html/htaccess"
             dest: "{{ code_dir }}/{{ use_project }}/public_html/.htaccess"
-        - name: copy public files
-          copy:
+        - name: copy public files except scss
+          ansible.posix.synchronize:
             src: "{{ playbook_dir }}/env/templates/elib-blog/public_html/"
-            dest: "{{ code_dir }}/{{ use_project }}/public_html"
+            dest: "{{ code_dir }}/{{ use_project }}/public_html/"
+            rsync_opts:
+              - "--exclude=css/scss/"
         - name: set redbean plugin
           ansible.builtin.set_fact:
             json:
