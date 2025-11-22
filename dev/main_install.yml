@@ -4,9 +4,9 @@
   stat:
     path: "{{ code_dir }}/{{ use_project }}/composer.phar"
   register: st
-- name: download composer
+- name: download composer 2.9.2 (pinned)
   ansible.builtin.get_url:
-    url: https://getcomposer.org/composer.phar
+    url: https://getcomposer.org/download/2.9.2/composer.phar
     dest: "{{ code_dir }}/{{ use_project }}"
   when: not st.stat.exists
 - name:  git safe directories

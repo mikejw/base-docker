@@ -1,12 +1,47 @@
 {
-    "require": {
+  {% set pkg =
+      'elib-cms' if template == 'elib-cms'
+      else ('empathy' if template == 'vanilla' else template)
+  %}
+
+  {% set default_ref = '^4' %}
+  {% set ref = use_core_ref | default(default_ref) %}
+
+  "config": {
+    "github-protocols": ["https"]
+  },
+
+  {% if ref.startswith('dev-') %}
+  "repositories": [
+    { "type": "vcs", "url": "https://github.com/mikejw/empathy.git", "no-api": true }
+    {% if pkg != 'empathy' and pkg != 'elib-cms' %}
+    ,{ "type": "vcs", "url": "https://github.com/mikejw/{{ pkg }}.git", "no-api": true }
+    {% endif %}
+  ],
+  {% endif %}
+
+  "require": {
     {% if template == 'elib-cms' %}
-        "mikejw/elib-cms": "^4",
-        "mikejw/elib-siteinfo": "^4.0",
-        "nesbot/carbon": "^3.0@dev"
+      "mikejw/elib-cms": "^4",
+      "mikejw/elib-siteinfo": "^4.0",
+      "nesbot/carbon": "^3.0@dev"
+      {% if use_core_ref is defined %}
+      ,"mikejw/empathy": "{{ ref }}"
+      {% endif %}
     {% else %}
-        "mikejw/{% if template == 'vanilla' %}empathy{% else %}{{ template}}{% endif %}": "^4"
-    {% endif %}    
-    },
-    "minimum-stability": "dev"
+
+      {% if pkg == 'empathy' %}
+        "mikejw/empathy": "{{ ref }}"
+      {% else %}
+        "mikejw/{{ pkg }}": "^4"
+        {% if use_core_ref is defined %}
+        ,"mikejw/empathy": "{{ ref }}"
+        {% endif %}
+      {% endif %}
+
+    {% endif %}
+  },
+
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

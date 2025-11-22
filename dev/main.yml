@@ -22,6 +22,7 @@
     composer_install_source: "{{ (use_developer) | ternary('--prefer-source', '') }}"
     compose_dir: "{{ '/home/vagrant/files' if (variable_host | default('')) == 'node' else playbook_dir }}"
     control_code_dir: "{{ hostvars['control']['code_dir'] }}"
+    use_core_ref: "{{ core_ref }}"
   gather_facts: yes
   tasks:
     - name: install pip packages
