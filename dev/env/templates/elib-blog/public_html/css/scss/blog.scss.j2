@@ -1,5 +1,3 @@
-
-
 :root { --safe-top: env(safe-area-inset-top, 0px); }
 
 
@@ -315,4 +313,48 @@ ol, ul {
   a {
     text-decoration: none
   }
+
+
+  .lightbox .spinner-border { display: none !important; }
+
+  .lightbox {
+    cursor: pointer;
+  }
+  
+  .lightbox .ratio {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .lightbox .ratio::before {
+    padding-top: 0 !important;   /* kill the aspect-ratio padding hack */
+  }
+
+  .lightbox .ratio > * {
+    height: 100vh;               /* make child fill it too */
+  }
+
+  /* your image sizing */
+  .lightbox img {
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;         /* keep square */
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* caption becomes overlay instead of layout block */
+  .lightbox .lightbox-caption,
+  .lightbox .carousel-caption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    z-index: 5;
+    margin: 0;
+    padding: .75rem 1rem;
+    background: rgba(0,0,0,.5);
+    color: #fff;
+    pointer-events: none; /* clicks go through */
+    font-size: 1.4rem;
+  }
+  
 }

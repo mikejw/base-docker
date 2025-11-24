@@ -46,7 +46,7 @@
 {/if}
 <script src="http://{$WEB_ROOT}{$PUBLIC_DIR}/vendor/js/main.min.js"></script>
 <script src="http://{$WEB_ROOT}{$PUBLIC_DIR}/js/common.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ekko-lightbox/5.3.0/ekko-lightbox.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bs5-lightbox@1.8.5/dist/index.bundle.min.js"></script>
 <script src="http://{$WEB_ROOT}{$PUBLIC_DIR}/js/blog.js"></script>
 
 </body>
