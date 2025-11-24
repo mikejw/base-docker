@@ -20,7 +20,7 @@
                 <div class="separator-w"></div>
                 <div class="d-flex align-items-center justify-content-between align-items-center">
                     <div class="terms">
-                        <span class="mr-4">Copyright © {$smarty.now|date_format:'%Y'} Ai-em Ltd.</span>
+                        <span class="me-4">Copyright © {$smarty.now|date_format:'%Y'} Ai-em Ltd.</span>
                         <span>
                             <span>
                                     <a target="_blank" href="https://twitter.com/onlinevibes_" class="text-secondary">
