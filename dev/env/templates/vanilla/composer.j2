@@ -1,3 +1,4 @@
+
 {
   {% set pkg =
       'elib-cms' if template == 'elib-cms'
@@ -6,16 +7,18 @@
 
   {% set default_ref = '^4' %}
   {% set ref = use_core_ref | default(default_ref) %}
+  {% set use_dev_ref = ref.startswith('dev-') %}
+  {% set pin_base = use_dev_ref and pkg != 'empathy' %}
 
   "config": {
     "github-protocols": ["https"]
   },
 
-  {% if ref.startswith('dev-') %}
+  {% if use_dev_ref %}
   "repositories": [
     { "type": "vcs", "url": "https://github.com/mikejw/empathy.git", "no-api": true }
-    {% if pkg != 'empathy' and pkg != 'elib-cms' %}
-    ,{ "type": "vcs", "url": "https://github.com/mikejw/{{ pkg }}.git", "no-api": true }
+    {% if pin_base %}
+    ,{ "type": "vcs", "url": "https://github.com/mikejw/elib-base.git", "no-api": true }
     {% endif %}
   ],
   {% endif %}
@@ -28,6 +31,9 @@
       {% if use_core_ref is defined %}
       ,"mikejw/empathy": "{{ ref }}"
       {% endif %}
+      {% if pin_base %}
+      ,"mikejw/elib-base": "{{ ref }}"
+      {% endif %}
     {% else %}
 
       {% if pkg == 'empathy' %}
@@ -36,6 +42,9 @@
         "mikejw/{{ pkg }}": "^4"
         {% if use_core_ref is defined %}
         ,"mikejw/empathy": "{{ ref }}"
+        {% endif %}
+        {% if pin_base %}
+        ,"mikejw/elib-base": "{{ ref }}"
         {% endif %}
       {% endif %}
 
