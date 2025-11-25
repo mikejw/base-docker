@@ -51,7 +51,7 @@
                         </li>
                     {/if}
                 </ul>
-                <ul class="navbar-nav flex-row">
+                <ul class="navbar-nav flex-row me-2">
                     {*
                     {if $vendorRead neq false and !($class eq 'store' and $event eq 'cart')}
                         <li class="nav-item">
