@@ -16,7 +16,7 @@
     {include file="comp_social_markup.tpl"}
 </head>
 
-<body id="{$module}" class="hasnav">
+<body id="{$module}" class="hasnav {if $module eq 'admin' and $class eq 'blog' and $event eq 'preview'}preview{/if}">
 
     <div class="body-inner">
 
