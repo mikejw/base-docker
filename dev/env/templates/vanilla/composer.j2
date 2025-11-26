@@ -33,18 +33,28 @@
       {% endif %}
       {% if pin_base %}
       ,"mikejw/elib-base": "{{ ref }}"
+      ,"mikejw/elib-siteinfo": "{{ ref }}"
       {% endif %}
     {% else %}
 
       {% if pkg == 'empathy' %}
         "mikejw/empathy": "{{ ref }}"
       {% else %}
+
+        {% if pkg == 'elib-blog' %}
+        "mikejw/{{ pkg }}": "{{ ref }}"  
+        {% else %}
         "mikejw/{{ pkg }}": "^4"
+        {% endif %}
+
         {% if use_core_ref is defined %}
         ,"mikejw/empathy": "{{ ref }}"
         {% endif %}
         {% if pin_base %}
         ,"mikejw/elib-base": "{{ ref }}"
+          {% if pkg == 'elib-blog' %}
+          ,"mikejw/elib-siteinfo": "{{ ref }}"
+          {% endif %}  
         {% endif %}
       {% endif %}
 
