@@ -19,14 +19,11 @@ class CustomController extends Controller
 
         if ($this->module == 'blog') {
             $this->internalReferrer();
-
             $this->blogCategory();
-
-            $this->assign('def_date_format', 'M jS, Y \a\t g:ia');
-
             $cache = $this->stash->get('cache');
             $this->assign('about', $cache->cachedCallback('about_text', array($this, 'loadAboutText')));
         }
+        $this->assign('def_date_format', 'M jS, Y \a\t g:ia');
     }
 
     public function loadAboutText()
