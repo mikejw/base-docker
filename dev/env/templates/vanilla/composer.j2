@@ -1,4 +1,23 @@
 
+
+{
+    "require": {
+    {% if template == 'elib-cms' %}
+        "mikejw/elib-cms": "^4",
+        "mikejw/elib-siteinfo": "^4.1",
+        "nesbot/carbon": "^3.0@dev"
+    {% else %}
+        "mikejw/{% if template == 'vanilla' %}empathy{% else %}{{ template}}{% endif %}": "^4"
+    {% endif %}    
+    },
+    "minimum-stability": "dev"
+}
+
+
+
+{# core lib feature branch (bootstrap5)
+
+
 {
   {% set pkg =
       'elib-cms' if template == 'elib-cms'
@@ -64,3 +83,4 @@
   "minimum-stability": "dev",
   "prefer-stable": true
 }
+#}
