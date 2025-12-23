@@ -1,3 +1,10 @@
+
+
+span.badge {
+  box-shadow: 0 4px 5px rgba(0, 0, 0, 0.33);
+}
+
+
 :root { --safe-top: env(safe-area-inset-top, 0px); }
 
 
@@ -190,9 +197,16 @@
     padding: 0 4px;
     color: $white;
     margin-bottom: 2rem;
+    margin-top: 2rem;
   }
 
-  h1 {
+  @media (min-width: 575.98px) {
+    .rss a i {
+      margin-top: 0;
+    }
+  }
+
+  h1, h2 {
     font-family: "Archivo Narrow", sans-serif;
     color: map-get($theme-colors, "accent2");
     text-transform: uppercase;
@@ -268,6 +282,7 @@
     margin-top: 0;
   }
 
+
   #archive ul {
     margin-left: 1rem;
     padding-left: 0;
@@ -288,6 +303,11 @@
   .blog-post {
     margin-top: 60px;
   }
+
+  .blog-post h2 {
+    font-family: "Archivo Narrow", sans-serif;
+  }
+
   .blog-post h2 a {
     color: map-get($theme-colors, "dark");
   }
@@ -325,7 +345,7 @@
   .lightbox {
     cursor: pointer;
   }
-  
+
   .lightbox .ratio {
     height: 100vh;
     height: 100dvh;
@@ -361,5 +381,5 @@
     pointer-events: none; /* clicks go through */
     font-size: 1.4rem;
   }
-  
+
 }
