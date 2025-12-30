@@ -9,8 +9,10 @@
     url: https://getcomposer.org/download/2.9.2/composer.phar
     dest: "{{ code_dir }}/{{ use_project }}"
   when: not st.stat.exists
-- name:  git safe directories
-  shell: docker exec -i -u www-data app  git config --global --add safe.directory '*'
+- name: mark all repos safe in container (system config)
+  ansible.builtin.command: >
+    docker exec -i app git config --system --add safe.directory '*'
+  changed_when: true
 - name: composer install
   shell: "docker exec -i -u www-data app php ./composer.phar install -q {{ composer_install_source }}"
 - name: set up app
