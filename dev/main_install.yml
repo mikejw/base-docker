@@ -11,7 +11,7 @@
   when: not st.stat.exists
 - name: mark all repos safe in container (system config)
   ansible.builtin.command: >
-    docker exec -i app git config --system --add safe.directory '*'
+    docker exec -i -u root app git config --system --add safe.directory '*'
   changed_when: true
 - name: composer install
   shell: "docker exec -i -u www-data app php ./composer.phar install -q {{ composer_install_source }}"
