@@ -59,17 +59,4 @@
     - name: build react
       shell: docker exec -i -u www-data app ant remix
   when: operation == "qs" and template == "elib-cms"
-- name: set uid/gid for docker compose in .env
-  ansible.builtin.lineinfile:
-    path: "{{ code_dir }}/{{ use_project }}/.env"
-    regexp: "^{{ item.key }}="
-    line: "{{ item.key }}={{ item.value }}"
-    create: true
-  loop:
-    - { key: "UID", value: "{{ ansible_user_uid }}" }
-    - { key: "GID", value: "{{ ansible_user_gid }}" }
-  delegate_to: localhost
-  run_once: true
-     
-
 
