@@ -22,6 +22,7 @@ services:
     volumes:
       - {{ code_dir }}/{{ use_project }}:/var/www/project
       - /etc/localtime:/etc/localtime:ro
+    user: "${UID}:${GID}"  
 
   # TODO: add log rotation
   app-log:

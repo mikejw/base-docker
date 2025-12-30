@@ -20,4 +20,6 @@ services:
       - VIRTUAL_PORT=3000
       - NODE_ENV=production
       - MY_HOST={{ local_url }}
+    user: "${UID}:${GID}"
+      
 
