@@ -1,6 +1,13 @@
 #jinja2: trim_blocks:False
 
 ---
+
+volumes:
+  uploads:
+  vendor:
+  vendor-public:
+  composer-cache:
+
 services:
   cache:
     container_name: cache
