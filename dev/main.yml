@@ -101,7 +101,7 @@
         - name: npm install
           ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
           vars:
-            tooling_cmd: "npm install --bin-links=false"
+            tooling_cmd: "HOME=/tmp npm --cache /tmp/npm-cache install --bin-links=false"
 
         - name: grunt
           ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
