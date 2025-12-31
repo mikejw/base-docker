@@ -2,6 +2,8 @@
 
 ---
 
+volumes:
+  npm-cache:
 
 services:
   cache:
@@ -34,6 +36,7 @@ services:
     volumes:
       - {{ code_dir }}/{{ use_project }}:/var/www/project
       - /etc/localtime:/etc/localtime:ro
+      - npm-cache:/tmp/npm-cache
 
   # TODO: add log rotation
   app-log:
