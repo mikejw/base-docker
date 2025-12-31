@@ -26,6 +26,7 @@ services:
     volumes:
       - {{ code_dir }}/{{ use_project }}:/var/www/project
       - /etc/localtime:/etc/localtime:ro
+      - npm-cache:/tmp/npm-cache
     user: "${UID}:${GID}"  
 
   tooling:
