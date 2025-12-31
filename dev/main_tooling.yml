@@ -32,7 +32,6 @@
     app_compose_files:
       - "{{ compose_project_dir }}/docker-compose.yml"
       - "{{ compose_project_dir }}/docker-compose.partial.yml"
-    env_file_path: "{{ code_dir }}/{{ use_project }}/.env"
+    env_file_path: "{{ lookup('env','HOME') }}/code/{{ use_project }}/.env"
     tooling_service: tooling
-    tooling_workdir: /var/www/project
     tooling_cmd: "composer install"
