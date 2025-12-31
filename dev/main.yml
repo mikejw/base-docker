@@ -76,10 +76,15 @@
             path: "{{ code_dir }}/{{ use_project }}/dump.sql"
           register: stdump
         - name: populate db (dump)
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql populate"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --mysql populate"  
           when: stsetup.stat.exists and stdump.stat.exists
+        
         - name: populate db (setup)
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql setup"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --mysql setup"  
           when: stsetup.stat.exists and not stdump.stat.exists
 
         # fe build
@@ -94,16 +99,27 @@
           when: (variable_host | default('')) == 'node'
 
         - name: npm install
-          shell: docker exec -i -u www-data app npm install --bin-links=false
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "npm install --bin-links=false"
+
         - name: grunt
-          shell: docker exec -i -u www-data app make grunt
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "make grunt"
 
         - name: check if build file contains remix
-          shell: docker exec -i -u www-data app ant -p | grep remix | wc -l | awk '{ print $1 }'
-          register: hasRemix 
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "ant -p | grep remix | wc -l | awk '{ print $1 }'"
+
+
         - name: build react
-          shell: docker exec -i -u www-data app ant remix  
-          when: hasRemix.stdout | int == 1
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "ant remix"
+          when: tooling_output.stdout | init == 1  
+
         - name: restart remix
           community.docker.docker_compose_v2:
             project_src: "{{ compose_dir }}"
@@ -182,14 +198,21 @@
           template:
             src: "{{ playbook_dir }}/env/templates/elib-base/elib.j2"
             dest: "{{ code_dir }}/{{ use_project }}/elib.yml"
+
         - name: enable elib
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --set_elib"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --set_elib"
+
+
         - name: get installed elibs
-          command: docker exec -i -u www-data app php ./vendor/bin/empathy --get_elibs
-          register: installed_elibs
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --get_elibs"
+
         - name: set installed libs list
           ansible.builtin.set_fact:
-            installed_elibs_list: "{{ installed_elibs.stdout | from_json }}"
+            installed_elibs_list: "{{ tooling_output.stdout | from_json }}"
         - name: 'set file name'
           ansible.builtin.set_fact:
             input_file: 'dd.sql'
@@ -199,12 +222,15 @@
         - name: read dd
           include_tasks: "{{ playbook_dir }}/main_read_files.yml"
           loop: "{{ installed_elibs_list }}"
+
         - name: get dd tables
-          command: docker exec -i -u www-data app php ./vendor/bin/empathy --get_elib_tables
-          register: tables
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --get_elib_tables"
+        
         - name: set table list
           ansible.builtin.set_fact:
-            table_list: "{{ tables.stdout | from_json }}"
+            table_list: "{{ tooling_output.stdout | from_json }}"
         - name: populate setup.sql
           template:
             src: "{{ playbook_dir }}/env/templates/elib-base/setup.j2"
@@ -232,14 +258,27 @@
             input_file: 'setup.sql'
         - name: lint setup
           include_tasks: "{{ playbook_dir }}/main_lint_sql.yml"
+        
         - name: populate db setup
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql setup"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --mysql setup"
+
         - name: admin module
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --inst_mod admin"
-        - name: admin module
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --inst_mod user"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --inst_mod admin"
+
+        - name: user module 
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --inst_mod user"
+            
         - name: clear cache
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --clear_cache"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --clear_cache"        
+      
       when: operation == "qs" and template != "vanilla"
     - name: qs elib-acl template
       block:
@@ -266,16 +305,24 @@
             json:
               name: Empathy\ELib\MVC\Plugin\Acl
               version: "1.0"
+
         - name: assert acl plugin
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"   
+
         - name: set json view plugin config
           ansible.builtin.set_fact:
             json:
               name: JSONView
               version: "1.0"
               config: '[{ "api": {} }, { "api2": {} }, { "api3": {} }]'
+
         - name: assert json view plugin
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"  
+
         # modify elib
         - name: open elib config
           slurp:
@@ -303,12 +350,22 @@
           template:
             src: "{{ playbook_dir }}/env/templates/elib-acl/application/admin.j2"
             dest: "{{ code_dir }}/{{ use_project }}/application/admin/admin.php"
+
         - name: generate api module
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --inst_mod api"
-        - name: clear cache 
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --clear_cache"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --inst_mod api"  
+
+        - name: clear cache
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --clear_cache"  
+
         - name: populate db
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql setup"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --mysql setup"  
+
         - name: create module dir api2
           file:
             path: "{{ code_dir }}/{{ use_project }}/application/api2"
@@ -341,23 +398,35 @@
             json:
               name: Redbean
               version: "1.0"
+
         - name: assert redbean plugin
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"  
+
         - name: set site info plugin
           ansible.builtin.set_fact:
             json:
               name: Empathy\ELib\MVC\Plugin\SiteInfo
               version: "1.0"
+
         - name: assert site info plugin
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'" 
+
         - name: set json view plugin config
           ansible.builtin.set_fact:
             json:
               name: JSONView
               version: "1.0"
               config: '[{ "resume": {} }]'
+        
         - name: assert json view plugin
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"   
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'" 
+
         - name: create module dir resume
           file:
             path: "{{ code_dir }}/{{ use_project }}/application/resume"
@@ -385,8 +454,12 @@
             mode: 0600
           with_fileglob:
             - "{{ playbook_dir }}/env/templates/elib-cms/public_html/uploads/*"
+
         - name: site info module
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --inst_mod admin"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --inst_mod admin" 
+
         - name: populate services.php
           template:
             src: "{{ playbook_dir }}/env/templates/elib-cms/services.j2"
@@ -406,14 +479,22 @@
             path: "{{ code_dir }}/{{ use_project }}/config.yml"
             regexp: 'dynamic_module_default_uri:'
             line: "  dynamic_module_default_uri: splash"
+
         - name: clear cache
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --clear_cache"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --clear_cache" 
+
         - name: copy dump file
           copy:
             src: "{{ playbook_dir }}/env/templates/elib-cms/dump.sql"
             dest: "{{ code_dir }}/{{ use_project }}"
+
         - name: populate db
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql populate"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --mysql populate" 
+            
         - name: restart remix
           community.docker.docker_compose_v2:
             project_src: "{{ compose_dir }}"
@@ -424,12 +505,22 @@
       when: operation == "qs" and template == "elib-cms"
     - name: qs elib-blog template
       block:
+
         - name: generate front blog module
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --inst_mod blog"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --inst_mod blog" 
+        
         - name: generate front blog feed module
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --inst_mod feed"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --inst_mod feed" 
+
         - name: populate db
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql setup"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --mysql setup"     
+        
         # modify elib
         - name: open elib config
           slurp:
@@ -477,15 +568,25 @@
             json:
               name: Redbean
               version: "1.0"
+
+
         - name: assert redbean plugin
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"    
+
         - name: set site info plugin
           ansible.builtin.set_fact:
             json:
               name: Empathy\ELib\MVC\Plugin\SiteInfo
               version: "1.0"
+        
         - name: assert site info plugin
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --assert_plugin '{{ json | to_json }}'" 
+
+
         - name: disable error handling
           ansible.builtin.lineinfile:
             path: "{{ code_dir }}/{{ use_project }}/config.yml"
@@ -509,14 +610,22 @@
           file:
               path: "{{ code_dir }}/{{ use_project }}/public_html/uploads"
               state: directory
+
         - name: clear cache
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --clear_cache"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --clear_cache" 
+
         - name: copy dump file
           copy:
             src: "{{ playbook_dir }}/env/templates/elib-blog/dump.sql"
             dest: "{{ code_dir }}/{{ use_project }}"
+
         - name: populate db
-          command: "docker exec -i -u www-data app php ./vendor/bin/empathy --mysql populate"
+          ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+          vars:
+            tooling_cmd: "php ./vendor/bin/empathy --mysql populate" 
+
       when: operation == "qs" and template == "elib-blog"
 
 
