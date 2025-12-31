@@ -1,6 +1,17 @@
 
 
 - block:
+
+    - name: debug compose inputs
+      ansible.builtin.debug:
+        msg:
+          compose_project_dir: "{{ compose_project_dir }}"
+          app_compose_files: "{{ app_compose_files }}"
+          app_compose_files_types: "{{ app_compose_files | map('type_debug') | list }}"
+          env_file_path: "{{ env_file_path }}"
+      delegate_to: localhost
+      run_once: true
+
     - name: run tooling command via docker compose
       ansible.builtin.command: >-
         docker compose
