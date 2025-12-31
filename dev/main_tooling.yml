@@ -2,13 +2,20 @@
 
 - block:
 
-    - name: ensure npm cache writable
+
+    - name: ensure npm cache volume ownership (pattern B)
       ansible.builtin.command: >-
-        docker compose -f {{ compose_project_dir }}/docker-compose.yml
+        docker compose
+        -f {{ compose_project_dir }}/docker-compose.yml
         --env-file {{ env_file_path }}
         --project-directory {{ compose_project_dir }}
         run --rm --user 0:0 tooling -lc
-        "mkdir -p /tmp/npm-cache && chown -R {{ lookup('env','UID') | default('1001') }}:{{ lookup('env','GID') | default('1001') }} /tmp/npm-cache"
+        "mkdir -p /tmp/npm-cache &&
+         chown -R {{ uid }}:{{ gid }} /tmp/npm-cache"
+      vars:
+        uid: "{{ lookup('env', 'UID') | default('1001') }}"
+        gid: "{{ lookup('env', 'GID') | default('1001') }}"
+      changed_when: false
 
     - name: run tooling command via docker compose
       ansible.builtin.command: >-
