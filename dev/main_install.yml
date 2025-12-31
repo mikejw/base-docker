@@ -19,11 +19,12 @@
       vars:
         tooling_cmd: "php ./composer.phar install -q {{ composer_install_source }}"
 
+
     - name: set up app
       ansible.builtin.expect:
         command: >-
           docker compose
-          -f {{ (app_compose_files | select('file') | list) | join(' -f ') }}
+          -f {{ compose_project_dir }}/docker-compose.yml
           --env-file {{ env_file_path }}
           --project-directory {{ compose_project_dir }}
           run --rm {{ tooling_service }}
@@ -87,10 +88,7 @@
       when: operation == "qs" and template == "elib-cms"
 
   vars:
-    compose_project_dir: "{{ playbook_dir }}"
-    app_compose_files:
-      - "{{ compose_project_dir }}/docker-compose.yml"
-      - "{{ compose_project_dir }}/docker-compose.partial.yml"
+    compose_project_dir: "{{ compose_dir }}"
     env_file_path: "{{ lookup('env','HOME') }}/code/{{ use_project }}/.env"
     tooling_service: tooling
 

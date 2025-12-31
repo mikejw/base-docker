@@ -1,7 +1,5 @@
 
-
 - block:
-
 
     - name: ensure npm cache volume ownership (pattern B)
       ansible.builtin.command: >-
@@ -14,10 +12,17 @@
          chown -R {{ ansible_user_uid }}:{{ ansible_user_gid }} /tmp/npm-cache"
       changed_when: false
 
+    - name: check for partial compose file
+      ansible.builtin.stat:
+        path: "{{ compose_project_dir }}/docker-compose.partial.yml"
+      register: partial_compose
+      run_once: true
+
     - name: run tooling command via docker compose
       ansible.builtin.command: >-
         docker compose
-        -f {{ (app_compose_files | select('file') | list) | join(' -f ') }}
+        -f {{ compose_project_dir }}/docker-compose.yml
+        {% if partial_compose.stat.exists %}-f {{ compose_project_dir }}/docker-compose.partial.yml{% endif %}
         --env-file {{ env_file_path }}
         --project-directory {{ compose_project_dir }}
         run --rm {{ tooling_service }}
@@ -29,10 +34,7 @@
       ansible.builtin.set_fact:
         tooling_output: "{{ tooling_cmd_result }}"      
   vars:
-    compose_project_dir: "{{ playbook_dir }}"
-    app_compose_files:
-      - "{{ compose_project_dir }}/docker-compose.yml"
-      - "{{ compose_project_dir }}/docker-compose.partial.yml"
+    compose_project_dir: "{{ compose_dir }}"
     env_file_path: "{{ lookup('env','HOME') }}/code/{{ use_project }}/.env"
     tooling_service: tooling
     tooling_cmd: "composer install"
