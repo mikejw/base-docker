@@ -1,6 +1,34 @@
 
 
 - block:
+
+    - name: debug tooling vars (types + values)
+      ansible.builtin.debug:
+        msg:
+          compose_files_value: "{{ compose_files }}"
+          compose_files_type: "{{ compose_files | type_debug }}"
+          env_file_value: "{{ env_file }}"
+          env_file_type: "{{ env_file | type_debug }}"
+          compose_project_dir_value: "{{ compose_project_dir }}"
+          compose_project_dir_type: "{{ compose_project_dir | type_debug }}"
+      delegate_to: localhost
+      run_once: true
+
+    - name: assert tooling vars are sane
+      ansible.builtin.assert:
+        that:
+          - compose_files is iterable
+          - compose_files is not string
+          - compose_files | length > 0
+          - (compose_files | map('type_debug') | unique) == ['str']
+          - env_file is string
+          - env_file | length > 0
+        fail_msg: >
+          Bad tooling vars: compose_files={{ compose_files }} ({{ compose_files | type_debug }}),
+          env_file={{ env_file }} ({{ env_file | type_debug }})
+      delegate_to: localhost
+      run_once: true
+
     - name: run tooling command via docker compose
       ansible.builtin.command: >-
         docker compose
