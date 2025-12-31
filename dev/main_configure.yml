@@ -1,12 +1,42 @@
 
-- name: configure
-  shell: |
-    docker exec -u www-data app php ./vendor/bin/empathy --set_docroot /var/www/project
-    docker exec -u www-data app php ./vendor/bin/empathy --set_webroot {{ use_host }}
-    docker exec -u www-data app php ./vendor/bin/empathy --set_publicdir ""
-    docker exec -u www-data app php ./vendor/bin/empathy --misc tpl_cache
-    docker exec -u www-data app php ./vendor/bin/empathy --set_dbserver db
-    docker exec -u www-data app php ./vendor/bin/empathy --set_dbuser root
-    docker exec -u www-data app php ./vendor/bin/empathy --set_dbpass example
-    docker exec -u www-data app php ./vendor/bin/empathy --set_dbname project
-    
+
+- name: configure 1
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+  vars:
+    tooling_cmd: "php ./vendor/bin/empathy --set_docroot /var/www/project" 
+
+- name: configure 2
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+  vars:
+    tooling_cmd: "php ./vendor/bin/empathy --set_webroot {{ use_host }}"
+
+- name: configure 3
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+  vars:
+    tooling_cmd: "php ./vendor/bin/empathy --set_publicdir ''"
+
+- name: configure 4
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+  vars:
+    tooling_cmd: "php ./vendor/bin/empathy --misc tpl_cache"
+
+- name: configure 5
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+  vars:
+    tooling_cmd: "php ./vendor/bin/empathy --set_dbserver db"
+
+- name: configure 6
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+  vars:
+    tooling_cmd: "php ./vendor/bin/empathy --set_dbuser root"
+
+- name: configure 7
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+  vars:
+    tooling_cmd: "php ./vendor/bin/empathy --set_dbpass example"
+
+- name: configure 8
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+  vars:
+    tooling_cmd: "php ./vendor/bin/empathy --set_dbname project"
+

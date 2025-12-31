@@ -2,11 +2,6 @@
 
 ---
 
-volumes:
-  uploads:
-  vendor:
-  vendor-public:
-  composer-cache:
 
 services:
   cache:
@@ -26,15 +21,20 @@ services:
     environment:
       - VIRTUAL_HOST={{ use_host }}
       - VIRTUAL_PORT=80
-      - COMPOSER_CACHE_DIR=/tmp/composer  
     volumes:
       - {{ code_dir }}/{{ use_project }}:/var/www/project
       - /etc/localtime:/etc/localtime:ro
-      - uploads:/var/www/project/public_html/uploads
-      - vendor:/var/www/project/vendor
-      - vendor-public:/var/www/project/public_html/vendor
-      - composer-cache:/tmp/composer
     user: "${UID}:${GID}"  
+
+  tooling:
+    image: registry.gitlab.com/mikejw/empathy/franken-dev-wnode:{% if use_arch == 'pi' %}arm64{% else %}latest{% endif +%}
+    entrypoint: sh
+    user: "${UID}:${GID}"
+    working_dir: /var/www/project
+    volumes:
+      - ~/code/blog:/var/www/project
+      - /etc/localtime:/etc/localtime:ro
+      
 
   # TODO: add log rotation
   app-log:
