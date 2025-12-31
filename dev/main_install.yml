@@ -32,8 +32,7 @@
           'Please enter document root': "/var/www/project"
           'Please enter name': "{{ use_project }}"
           'Please enter web root': "www.dev.org"
-        echo: true  
-      delegate_to: localhost
+        echo: true
       run_once: true
       when: operation == "qs"
 
