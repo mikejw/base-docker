@@ -4,7 +4,7 @@
     - name: run tooling command via docker compose
       ansible.builtin.command: >-
         docker compose
-        {{ compose_files | map('regex_replace', '^(.*)$', '-f \\1') | join(' ') }}
+        {{ app_compose_files | map('regex_replace', '^(.*)$', '-f \\1') | join(' ') }}
         --env-file {{ env_file }}
         --project-directory {{ compose_project_dir }}
         run --rm {{ tooling_service }}
@@ -18,7 +18,7 @@
         tooling_output: "{{ tooling_cmd_result }}"      
   vars:
     compose_project_dir: "{{ playbook_dir }}"
-    compose_files:
+    app_compose_files:
       - "{{ compose_project_dir }}/docker-compose.yml"
       - "{{ compose_project_dir }}/docker-compose.partial.yml"
     env_file: "{{ code_dir }}/{{ use_project }}/.env"
