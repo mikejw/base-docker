@@ -11,10 +11,7 @@
         --project-directory {{ compose_project_dir }}
         run --rm --user 0:0 tooling -lc
         "mkdir -p /tmp/npm-cache &&
-         chown -R {{ uid }}:{{ gid }} /tmp/npm-cache"
-      vars:
-        uid: "{{ lookup('env', 'UID') | default('1001') }}"
-        gid: "{{ lookup('env', 'GID') | default('1001') }}"
+         chown -R {{ ansible_user_uid }}:{{ ansible_user_gid }} /tmp/npm-cache"
       changed_when: false
 
     - name: run tooling command via docker compose
