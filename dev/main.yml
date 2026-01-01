@@ -113,12 +113,15 @@
           vars:
             tooling_cmd: "ant -p | grep remix | wc -l | awk '{ print $1 }'"
 
+        - name: Set a dynamic variable
+          set_fact:
+            has_remix: tooling_output.stdout | int == 1 
 
         - name: build react
           ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
           vars:
             tooling_cmd: "ant remix"
-          when: tooling_output.stdout | init == 1  
+          when: has_remix
 
         - name: restart remix
           community.docker.docker_compose_v2:
@@ -127,7 +130,8 @@
               - remix
             recreate: always
             files: "{{ compose_files }}"
-          when: hasRemix.stdout | int == 1  
+          when: has_remix
+          
       when: operation == "boot"
     - name: switch
       block:
