@@ -120,7 +120,7 @@
         - name: build react
           ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
           vars:
-            tooling_cmd: "ant remix"
+            tooling_cmd: "HOME=/tmp npm_config_cache=/tmp/npm-cache ant remix"
           when: has_remix
 
         - name: restart remix
