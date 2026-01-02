@@ -115,7 +115,7 @@
 
         - name: Set a dynamic variable
           set_fact:
-            has_remix: tooling_output.stdout | int == 1 
+            has_remix: "{{ tooling_output.stdout | int == 1 }}"
 
         - name: build react
           ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
