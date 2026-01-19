@@ -38,6 +38,8 @@ services:
       - {{ code_dir }}/{{ use_project }}:/var/www/project
       - /etc/localtime:/etc/localtime:ro
       - npm-cache:/tmp/npm-cache
+    environment:
+      HOME: /var/www/project  
 
   # TODO: add log rotation
   app-log:

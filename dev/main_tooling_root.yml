@@ -1,0 +1,19 @@
+
+
+- block:
+    - name: run tooling command as root user
+      ansible.builtin.command: >-
+        docker compose
+        -f {{ compose_project_dir }}/docker-compose.yml
+        --env-file {{ env_file_path }}
+        --project-directory {{ compose_project_dir }}
+        run --rm --user 0:0 tooling -lc
+        {{ tooling_cmd | quote }}
+      changed_when: false
+
+  vars:
+    compose_project_dir: "{{ compose_dir }}"
+    env_file_path: "{{ lookup('env','HOME') }}/code/{{ use_project }}/.env"
+    tooling_service: tooling
+    tooling_cmd: "ls"
+

@@ -1,16 +1,13 @@
 
 - block:
 
-    - name: ensure npm cache volume ownership (pattern B)
-      ansible.builtin.command: >-
-        docker compose
-        -f {{ compose_project_dir }}/docker-compose.yml
-        --env-file {{ env_file_path }}
-        --project-directory {{ compose_project_dir }}
-        run --rm --user 0:0 tooling -lc
-        "mkdir -p /tmp/npm-cache &&
-         chown -R {{ ansible_user_uid }}:{{ ansible_user_gid }} /tmp/npm-cache"
-      changed_when: false
+    - name:  ensure npm cache volume ownership
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling_root.yml"
+      vars:
+        tooling_cmd: >-
+          mkdir -p /tmp/npm-cache &&
+          chown -R {{ ansible_user_uid }}:{{ ansible_user_gid }} /tmp/npm-cache
+
 
     - name: check for partial compose file
       ansible.builtin.stat:

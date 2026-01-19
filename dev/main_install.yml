@@ -9,10 +9,12 @@
         url: https://getcomposer.org/download/2.9.2/composer.phar
         dest: "{{ code_dir }}/{{ use_project }}/composer.phar"
       when: not st.stat.exists
+    
     - name: mark all repos safe in container (system config)
-      ansible.builtin.command: >
-        docker exec -i -u root app git config --system --add safe.directory '*'
-      changed_when: true
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+      vars:
+        tooling_cmd: "git config --global --add safe.directory '/var/www/project/vendor/*'"
+
 
     - name: composer install
       ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
