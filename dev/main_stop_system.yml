@@ -1,0 +1,14 @@
+
+- block:
+
+      - name: remove containers for compose project
+        ansible.builtin.shell: |
+          ids=$(docker ps -aq \
+            --filter "label=com.docker.compose.project={{ project_name }}")
+
+          if [ -n "$ids" ]; then
+            docker rm -f $ids
+          fi
+
+  vars:
+    project_name: "base-docker"

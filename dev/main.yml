@@ -38,7 +38,7 @@
         - name: nginx config
           include_tasks: "{{ playbook_dir }}/main_nginx.yml"
         - name: stop containers
-          include_tasks: "{{ playbook_dir }}/main_stop.yml"  
+          include_tasks: "{{ playbook_dir }}/main_stop_system.yml"  
         - name: partials
           include_tasks: "{{ playbook_dir }}/partials.yml"
         - name: populate docker-compose
@@ -159,7 +159,7 @@
             src: "{{ playbook_dir }}/env/templates/vanilla/composer.j2"
             dest: "{{ code_dir }}/{{ use_project }}/composer.json"
         - name: stop containers
-          include_tasks: "{{ playbook_dir }}/main_stop.yml"     
+          include_tasks: "{{ playbook_dir }}/main_stop_system.yml"     
         - name: partials
           include_tasks: "{{ playbook_dir }}/partials.yml"
         - name: populate docker-compose
