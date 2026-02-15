@@ -8,6 +8,8 @@
 
 {% set project_dir = (env == "development") | ternary(code_dir + '/' + use_project, host_project_path + '/project') %}
 
+name: base-docker
+
 services:
   remix:
     container_name: remix{{ stack_id }}
