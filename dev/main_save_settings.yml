@@ -15,7 +15,7 @@
 - name: retrieve file
   ansible.builtin.fetch:
     src: "{{ settings_tmp.path }}"
-    dest: "{{ settings_dir }}/"
+    dest: "{{ settings_dir }}/base-docker.ini"
     flat: true
     validate_checksum: false
 
