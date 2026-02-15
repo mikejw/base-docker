@@ -1,11 +1,25 @@
 
+- name: create a unique temp file path
+  ansible.builtin.tempfile:
+    state: file
+    suffix: "-{{ settings_file }}"
+    path: /tmp
+  register: settings_tmp
+
 - name: populate settings file
-  template:
+  ansible.builtin.template:
     src: "{{ playbook_dir }}/env/base-docker.j2"
-    dest: "/tmp/{{ settings_file }}"
+    dest: "{{ settings_tmp.path }}"
+    mode: "0600"
+
 - name: retrieve file
-  fetch:
-    src:  "/tmp/{{ settings_file }}"
+  ansible.builtin.fetch:
+    src: "{{ settings_tmp.path }}"
     dest: "{{ settings_dir }}/"
     flat: true
     validate_checksum: false
+
+- name: cleanup temp file
+  ansible.builtin.file:
+    path: "{{ settings_tmp.path }}"
+    state: absent
