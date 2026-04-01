@@ -30,7 +30,7 @@ class templateA extends BaseTemplate
         ];
     }
 
-    public function default_event()
+    public function default_event(): void
     {
         $s = $this->section;
         $cacheKey = 'section_' . $s->id;

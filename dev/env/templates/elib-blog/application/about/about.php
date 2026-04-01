@@ -5,7 +5,7 @@ use Empathy\ELib\EController;
 
 class about extends EController
 {
-    public function default_event()
+    public function default_event(): void
     {
         //
     }

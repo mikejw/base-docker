@@ -14,7 +14,7 @@ class api2 extends BaseApiController implements ResourceInterface
      * @AclAnnotation(method="GET")
      *
      */
-    public function default_event()
+    public function default_event(): void
     {
         $rob = new ROb;
         $data = new \stdClass();

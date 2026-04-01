@@ -122,7 +122,7 @@ class templateB extends BaseTemplate
     }
 
 
-    public function default_event()
+    public function default_event(): void
     {
         $years = self::YEARS;
         if (isset($_GET['years']) && is_numeric($_GET['years'])) {
