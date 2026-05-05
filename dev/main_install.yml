@@ -73,13 +73,13 @@
 
     - name: remix
       block:
-        - name: extract react files
-          ansible.builtin.unarchive:
-            src: "{{ playbook_dir }}/env/templates/elib-cms/react.zip"
+        - name: copy react files
+          ansible.builtin.copy:
+            src: "{{ template_repo_cms }}/env/react"
             dest: "{{ code_dir }}/{{ use_project }}"
         - name: populate build.xml
           template:
-            src: "{{ playbook_dir }}/env/templates/elib-cms/build.j2"
+            src: "{{ template_repo_cms }}/env/build.j2"
             dest: "{{ code_dir }}/{{ use_project }}/build.xml"
         
         - name: build react

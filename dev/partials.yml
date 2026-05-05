@@ -28,11 +28,13 @@
       file:
         path: "{{ code_dir }}/{{ use_project }}/env"
         state: directory
-    - name: copy partial file
-      copy:
-        src: "{{ playbook_dir }}/env/templates/elib-cms/env/docker-partial.j2"
+
+    - name: download partial file
+      get_url:
+        url: "https://raw.githubusercontent.com/mikejw/elib-cms/feature/quickstart-files/env/env/docker-partial.j2"
         dest: "{{ code_dir }}/{{ use_project }}/env/docker-partial.j2"
-  when: operation == "qs" and template == "elib-cms"    
+        mode: "0644"
+  when: operation == "qs" and template == "elib-cms"   
 
 - name: detect services partial
   stat:
