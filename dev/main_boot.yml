@@ -44,6 +44,7 @@
     project_src: "{{ compose_dir }}"
     state: present
     remove_orphans: true
+    build: always
     env_files: "{{ env_file_stat.stat.exists | ternary([code_dir ~ '/' ~ use_project ~ '/.env'], omit) }}"
     files: "{{ compose_files }}"
  

@@ -58,7 +58,7 @@
           ansible.builtin.wait_for:
             port: 3306
             delay: 20
-            host: "{{ use_host }}"
+            host: 127.0.0.1
         - name: detect build
           stat:
             path: "{{ code_dir }}/{{ use_project }}/vendor"
