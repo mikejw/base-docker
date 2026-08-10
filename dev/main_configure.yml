@@ -35,8 +35,8 @@
   vars:
     tooling_cmd: "php ./vendor/bin/empathy --set_dbpass example"
 
-- name: configure 8
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
-  vars:
-    tooling_cmd: "php ./vendor/bin/empathy --set_dbname project"
+# - name: configure 8
+#   ansible.builtin.include_tasks: "{{ playbook_dir }}/main_tooling.yml"
+#   vars:
+#     tooling_cmd: "php ./vendor/bin/empathy --set_dbname project"
 
