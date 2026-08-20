@@ -125,12 +125,20 @@
           when: has_remix
 
         - name: restart remix
-          community.docker.docker_compose_v2:
-            project_src: "{{ compose_dir }}"
-            services:
-              - remix
-            recreate: always
-            files: "{{ compose_files }}"
+          block:
+            - name: check if env file exists
+              ansible.builtin.stat:
+                path: "{{ code_dir }}/{{ use_project }}/.env"
+              register: env_file_stat
+
+            - name: restart container
+              community.docker.docker_compose_v2:
+                project_src: "{{ compose_dir }}"
+                services:
+                  - remix
+                recreate: always
+                files: "{{ compose_files }}"
+                env_files: "{{ env_file_stat.stat.exists | ternary([code_dir ~ '/' ~ use_project ~ '/.env'], omit) }}"
           when: has_remix
           
       when: operation == "boot"
