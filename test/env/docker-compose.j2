@@ -18,7 +18,7 @@ services:
 
   tailscale-nginx:
     image: tailscale/tailscale:latest
-    hostname: test-tailscale-nginx
+    hostname: test-tailscale-nginx-{{ hosts.test_host }}
     environment:
       - TS_AUTHKEY={{ secrets_vals.ts_authkey }}
       - TS_EXTRA_ARGS=--advertise-tags=tag:container

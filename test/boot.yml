@@ -123,14 +123,14 @@
     - name: wait for tailscale service to appear
       shell: |
         tailscale status \
-        | grep test-tailscale-nginx \
+        | grep -F "test-tailscale-nginx-{{ hosts.test_host }}" \
         | grep -Ev '\boffline$' \
         | awk '{print $1}'
       register: tailscale_ip
       changed_when: false
       retries: 30
       delay: 5
-      until: tailscale_ip.stdout != ""   
+      until: tailscale_ip.stdout != ""
     - name: output ip
       debug:
         msg: "Tailscale IP: {{ tailscale_ip.stdout }}"
