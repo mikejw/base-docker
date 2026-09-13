@@ -123,8 +123,8 @@
     - name: wait for tailscale service to appear
       shell: |
         tailscale status \
-        | grep -F "test-tailscale-nginx-{{ hosts.test_host }}" \
-        | grep -Ev '\boffline$' \
+        | grep -E "test-tailscale-nginx-{{ hosts.test_host }}([[:space:]]|-[^[:space:]]+)" \
+        | grep -Ev '\boffline\b' \
         | awk '{print $1}'
       register: tailscale_ip
       changed_when: false
